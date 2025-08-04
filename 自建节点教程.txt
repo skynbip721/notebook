@@ -1,0 +1,21 @@
+一、准备工作（注册网站、申请域名）
+1、申请cloudflare账号获取搭建脚本服务器：https://dash.cloudflare.com/
+2、申请us.kg域名：https://nic.us.kg/
+3、获取节点脚本（明文版、加密版）更具自己的使用场景决定，推荐使用加密版
+   加密版脚本：https://github.com/cmliu/edgetunnel/blob/main/_worker.js
+   明文版脚本：https://github.com/cmliu/edgetunnel/blob/main/%E6%98%8E%E6%96%87%E6%BA%90%E7%A0%81.js
+
+二、搭建节点步骤
+1、登入cloudflare网站，登入自己的账号
+2、进入Workers 和 Pages页面，下一步"创建"
+3、下一步“创建Workers”，不要做任何修改，直接下一步“部署”
+4、下一步“编辑代码”，删除原有所有代码，更具自己需求复制加密版脚本或者明文版脚本，粘贴进去，下一步“部署”
+5、部署完返回首页，再次进入Workers 和 Pages页面，下一步“设置”，下一步“变量和机密”，下一步“添加”
+6、类型：文本 变量名称：PASSWORD 值：输入密码 下一步“部署”。这样就完成了搭建节点过程。
+
+三、获取节点
+1、回到Workers 和 Pages页面，点“访问”，进入新的页面，在地址栏里的网址最后面添加：“/密码”，获取部署信息，同时网址也是订阅地址，如：https://proud-glade-4ac9.archlinux-6c5.workers.dev/密码（值：输入密码）
+
+四、添加us.kg域名
+1、申请us.kg域名https://register.us.kg/
+2、添加域名进cloudflare

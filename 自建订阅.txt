@@ -1,0 +1,240 @@
+﻿https://proud-glade-4ac9.archlinux-6c5.workers.dev/archlinux
+################################################################
+Subscribe / sub 订阅地址, 支持 Base64、clash-meta、sing-box 订阅格式
+---------------------------------------------------------------
+自适应订阅地址:
+https://proud-glade-4ac9.archlinux-6c5.workers.dev/archlinux
+https://proud-glade-4ac9.archlinux-6c5.workers.dev/archlinux?sub
+
+Base64订阅地址:
+https://proud-glade-4ac9.archlinux-6c5.workers.dev/archlinux?b64
+https://proud-glade-4ac9.archlinux-6c5.workers.dev/archlinux?base64
+
+clash订阅地址:
+https://proud-glade-4ac9.archlinux-6c5.workers.dev/archlinux?clash
+
+singbox订阅地址:
+https://proud-glade-4ac9.archlinux-6c5.workers.dev/archlinux?sb
+https://proud-glade-4ac9.archlinux-6c5.workers.dev/archlinux?singbox
+
+实用订阅技巧∨
+---------------------------------------------------------------
+################################################################
+edgetunnel 配置信息
+---------------------------------------------------------------
+TOKEN: archlinux
+UUIDNow: 4330798e-1007-4e93-abd5-530051725a5f
+UUIDLow: 08ffb806-2c1c-40f4-8699-4450b59df9a9
+TIME（动态UUID有效时间）: 7 天
+UPTIME（动态UUID更新时间）: 3 时（北京时间）
+
+HOST: proud-glade-4ac9.archlinux-6c5.workers.dev
+UUID: 4330798e-1007-4e93-abd5-530051725a5f
+FKID: 5d4472ce-cb9b-3893-d079-44da4859eba6
+UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0
+
+CFCDN（访问方式）: 无法访问, 需要您设置 proxyIP/PROXYIP ！！！
+
+您的订阅内容由 内置 addresses/ADD* 参数变量提供
+ADD（TLS优选域名&IP）:
+  127.0.0.1:1234#CFnat
+ADDNOTLS（noTLS优选域名&IP）:
+  103.21.245.125#CF随机节点
+  104.16.80.163#CF随机节点
+  104.24.24.117#CF随机节点
+  172.64.229.159#CF随机节点
+  103.21.244.227#CF随机节点
+  104.16.96.102#CF随机节点
+  104.24.148.12#CF随机节点
+  141.101.86.135#CF随机节点
+  172.64.54.141#CF随机节点
+  188.114.101.71#CF随机节点
+  190.93.246.4#CF随机节点
+
+SUBAPI（订阅转换后端）: https://SUBAPI.fxxk.dedyn.io
+SUBCONFIG（订阅转换配置文件）: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini
+---------------------------------------------------------------
+################################################################
+v2ray
+---------------------------------------------------------------
+vless://4330798e-1007-4e93-abd5-530051725a5f@visa.cn:80?encryption=none&security=&sni=proud-glade-4ac9.archlinux-6c5.workers.dev&fp=randomized&type=ws&host=proud-glade-4ac9.archlinux-6c5.workers.dev&path=%2F%3Fed%3D2560#edgetunnel
+---------------------------------------------------------------
+################################################################
+clash-meta
+---------------------------------------------------------------
+- {name: edgetunnel, server: visa.cn, port: 80, type: vless, uuid: 4330798e-1007-4e93-abd5-530051725a5f, tls: false, alpn: [h3], udp: false, sni: proud-glade-4ac9.archlinux-6c5.workers.dev, tfo: false, skip-cert-verify: true, servername: proud-glade-4ac9.archlinux-6c5.workers.dev, client-fingerprint: randomized, network: ws, ws-opts: {path: "/?ed=2560", headers: {proud-glade-4ac9.archlinux-6c5.workers.dev}}}
+---------------------------------------------------------------
+################################################################
+telegram 交流群 技术大佬~在线发牌!
+https://t.me/CMLiussss
+---------------------------------------------------------------
+github 项目地址 Star!Star!Star!!!
+https://github.com/cmliu/edgetunnel
+---------------------------------------------------------------
+################################################################
+
+
+--------------------------------------------------------------------------------------------------------------
+
+
+https://archlinux119.us.kg/archlinux
+################################################################
+Subscribe / sub 订阅地址, 支持 Base64、clash-meta、sing-box 订阅格式
+---------------------------------------------------------------
+自适应订阅地址:
+https://archlinux119.us.kg/archlinux
+https://archlinux119.us.kg/archlinux?sub
+
+Base64订阅地址:
+https://archlinux119.us.kg/archlinux?b64
+https://archlinux119.us.kg/archlinux?base64
+
+clash订阅地址:
+https://archlinux119.us.kg/archlinux?clash
+
+singbox订阅地址:
+https://archlinux119.us.kg/archlinux?sb
+https://archlinux119.us.kg/archlinux?singbox
+
+实用订阅技巧∨
+---------------------------------------------------------------
+################################################################
+edgetunnel 配置信息
+---------------------------------------------------------------
+TOKEN: archlinux
+UUIDNow: 4330798e-1007-4e93-abd5-530051725a5f
+UUIDLow: 08ffb806-2c1c-40f4-8699-4450b59df9a9
+TIME（动态UUID有效时间）: 7 天
+UPTIME（动态UUID更新时间）: 3 时（北京时间）
+
+HOST: archlinux119.us.kg
+UUID: 4330798e-1007-4e93-abd5-530051725a5f
+FKID: 5d4472ce-cb9b-3893-d079-44da4859eba6
+UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36 Edg/131.0.0.0
+
+CFCDN（访问方式）: 无法访问, 需要您设置 proxyIP/PROXYIP ！！！
+
+您的订阅内容由 内置 addresses/ADD* 参数变量提供
+ADD（TLS优选域名&IP）:
+  127.0.0.1:1234#CFnat
+  103.21.244.190#CF随机节点
+  104.16.25.5#CF随机节点
+  104.24.100.96#CF随机节点
+  172.64.196.94#CF随机节点
+  103.21.244.117#CF随机节点
+  104.16.217.132#CF随机节点
+  104.24.184.67#CF随机节点
+  141.101.82.168#CF随机节点
+  172.64.163.144#CF随机节点
+  188.114.100.80#CF随机节点
+  190.93.244.83#CF随机节点
+
+SUBAPI（订阅转换后端）: https://SUBAPI.fxxk.dedyn.io
+SUBCONFIG（订阅转换配置文件）: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini
+---------------------------------------------------------------
+################################################################
+v2ray
+---------------------------------------------------------------
+vless://4330798e-1007-4e93-abd5-530051725a5f@archlinux119.us.kg:443?encryption=none&security=tls&sni=archlinux119.us.kg&fp=randomized&type=ws&host=archlinux119.us.kg&path=%2F%3Fed%3D2560#edgetunnel
+---------------------------------------------------------------
+################################################################
+clash-meta
+---------------------------------------------------------------
+- {name: edgetunnel, server: archlinux119.us.kg, port: 443, type: vless, uuid: 4330798e-1007-4e93-abd5-530051725a5f, tls: true, alpn: [h3], udp: false, sni: archlinux119.us.kg, tfo: false, skip-cert-verify: true, servername: archlinux119.us.kg, client-fingerprint: randomized, network: ws, ws-opts: {path: "/?ed=2560", headers: {archlinux119.us.kg}}}
+---------------------------------------------------------------
+################################################################
+telegram 交流群 技术大佬~在线发牌!
+https://t.me/CMLiussss
+---------------------------------------------------------------
+github 项目地址 Star!Star!Star!!!
+https://github.com/cmliu/edgetunnel
+---------------------------------------------------------------
+################################################################
+
+
+
+
+
+
+https://little-bush-da31.china13136342289.workers.dev/password
+################################################################
+Subscribe / sub 订阅地址, 支持 Base64、clash-meta、sing-box 订阅格式
+---------------------------------------------------------------
+自适应订阅地址:
+https://little-bush-da31.china13136342289.workers.dev/password
+https://little-bush-da31.china13136342289.workers.dev/password?sub
+
+Base64订阅地址:
+https://little-bush-da31.china13136342289.workers.dev/password?b64
+https://little-bush-da31.china13136342289.workers.dev/password?base64
+
+clash订阅地址:
+https://little-bush-da31.china13136342289.workers.dev/password?clash
+
+singbox订阅地址:
+https://little-bush-da31.china13136342289.workers.dev/password?sb
+https://little-bush-da31.china13136342289.workers.dev/password?singbox
+
+实用订阅技巧∨
+---------------------------------------------------------------
+################################################################
+edgetunnel 配置信息
+---------------------------------------------------------------
+TOKEN: password
+UUIDNow: ce5bf242-7805-45b6-afbe-3d2c249b62e6
+UUIDLow: 4f012b9b-a913-43e1-8dc3-fe5a41d6a210
+TIME（动态UUID有效时间）: 7 天
+UPTIME（动态UUID更新时间）: 3 时（北京时间）
+
+HOST: little-bush-da31.china13136342289.workers.dev
+UUID: ce5bf242-7805-45b6-afbe-3d2c249b62e6
+FKID: 5a4f6742-1dae-b6c4-79d1-49c86b8b72c6
+UA: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36 Edg/133.0.0.0
+
+CFCDN（访问方式）: ProxyIP
+  PROXYIP.tp1.fxxk.dedyn.io
+
+您的订阅内容由 内置 addresses/ADD* 参数变量提供
+ADD（TLS优选域名&IP）:
+  127.0.0.1:1234#CFnat
+ADDNOTLS（noTLS优选域名&IP）:
+  103.21.244.194#CF随机节点
+  104.16.238.18#CF随机节点
+  104.24.233.197#CF随机节点
+  172.64.7.47#CF随机节点
+  103.21.244.247#CF随机节点
+  104.16.84.91#CF随机节点
+  104.24.0.194#CF随机节点
+  141.101.91.207#CF随机节点
+  172.64.189.119#CF随机节点
+  188.114.97.141#CF随机节点
+  190.93.241.188#CF随机节点
+
+SUBAPI（订阅转换后端）: https://SUBAPI.fxxk.dedyn.io
+SUBCONFIG（订阅转换配置文件）: https://raw.githubusercontent.com/ACL4SSR/ACL4SSR/master/Clash/config/ACL4SSR_Online_Mini_MultiMode.ini
+---------------------------------------------------------------
+################################################################
+v2ray
+---------------------------------------------------------------
+vless://ce5bf242-7805-45b6-afbe-3d2c249b62e6@visa.cn:80?encryption=none&security=&sni=little-bush-da31.china13136342289.workers.dev&fp=randomized&type=ws&host=little-bush-da31.china13136342289.workers.dev&path=%2F%3Fed%3D2560#edgetunnel
+---------------------------------------------------------------
+################################################################
+clash-meta
+---------------------------------------------------------------
+- {name: edgetunnel, server: visa.cn, port: 80, type: vless, uuid: ce5bf242-7805-45b6-afbe-3d2c249b62e6, tls: false, alpn: [h3], udp: false, sni: little-bush-da31.china13136342289.workers.dev, tfo: false, skip-cert-verify: true, servername: little-bush-da31.china13136342289.workers.dev, client-fingerprint: randomized, network: ws, ws-opts: {path: "/?ed=2560", headers: {little-bush-da31.china13136342289.workers.dev}}}
+---------------------------------------------------------------
+################################################################
+telegram 交流群 技术大佬~在线发牌!
+https://t.me/CMLiussss
+---------------------------------------------------------------
+github 项目地址 Star!Star!Star!!!
+https://github.com/cmliu/edgetunnel
+---------------------------------------------------------------
+################################################################
+
+https://www17.bigairport-twelfth-sub.com/api/v1/client/subscribe?token=7f1100b1cbc353acfd45f2c9c3f3ca48
+https://proud-glade-4ac9.archlinux-6c5.workers.dev/archlinux
+https://little-bush-da31.china13136342289.workers.dev/password
+https://dawn-moon-66e0.japandog1069.workers.dev/archlinux
+https://frosty-mud-0ac4.archlinux911.workers.dev/archlinux
+
