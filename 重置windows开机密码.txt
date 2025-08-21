@@ -1,0 +1,15 @@
+1、按住键盘shift键，点右下角关机图标、选择重启电脑，重启过程不要松开shift键，等到出现请稍后……再松开。
+2、选择疑难解答，选择高级选项，选择命令提示符
+3、输入如下指令：
+进入c:盘
+cd windows/system32
+copy osk.exe osk1.exe
+y
+copy cmd.exe osk.exe
+y
+exit
+选择继续
+选择右下角辅助功能，选择屏幕键盘
+net user administrator 密码
+exit
+完成重置密码
