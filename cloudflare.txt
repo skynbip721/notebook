@@ -1,0 +1,57 @@
+网址：https://wandering-mountain-7bf8.skynbip-84c.workers.dev/dd8089f4-5b84-4479-9cc1-9106a27cc68d
+Cloudflare-workers/pages-vless代理脚本 V25.5.27
+
+甬哥博客地址：https://ygkkk.blogspot.com
+甬哥YouTube频道：https://www.youtube.com/@ygkkk
+甬哥TG电报群组：https://t.me/ygkkktg
+甬哥TG电报频道：https://t.me/ygkkktgpd
+
+ProxyIP使用nat64自动生成，无需设置
+
+
+1：CF-workers-vless+ws节点
+节点特色： 	单节点链接如下：
+关闭了TLS加密，无视域名阻断 	vless://dd8089f4-5b84-4479-9cc1-9106a27cc68d@www.visa.com.sg:8880?encryption=none&security=none&type=ws&host=wandering-mountain-7bf8.skynbip-84c.workers.dev&path=%2F%3Fed%3D2560#wandering-mountain-7bf8.skynbip-84c.workers.dev 	
+客户端参数如下：
+
+    客户端地址(address)：自定义的域名 或者 优选域名 或者 优选IP 或者 反代IP
+    端口(port)：7个http端口可任意选择(80、8080、8880、2052、2082、2086、2095)，或反代IP对应端口
+    用户ID(uuid)：dd8089f4-5b84-4479-9cc1-9106a27cc68d
+    传输协议(network)：ws 或者 websocket
+    伪装域名(host)：wandering-mountain-7bf8.skynbip-84c.workers.dev
+    路径(path)：/?ed=2560
+    传输安全(TLS)：关闭
+
+
+
+2：CF-workers-vless+ws+tls节点
+节点特色： 	单节点链接如下：
+启用了TLS加密，
+如果客户端支持分片(Fragment)功能，建议开启，防止域名阻断 	vless://dd8089f4-5b84-4479-9cc1-9106a27cc68d@www.visa.com.sg:8443?encryption=none&security=tls&type=ws&host=wandering-mountain-7bf8.skynbip-84c.workers.dev&sni=wandering-mountain-7bf8.skynbip-84c.workers.dev&fp=random&path=%2F%3Fed%3D2560#wandering-mountain-7bf8.skynbip-84c.workers.dev		
+客户端参数如下：
+
+    客户端地址(address)：自定义的域名 或者 优选域名 或者 优选IP 或者 反代IP
+    端口(port)：6个https端口可任意选择(443、8443、2053、2083、2087、2096)，或反代IP对应端口
+    用户ID(uuid)：dd8089f4-5b84-4479-9cc1-9106a27cc68d
+    传输协议(network)：ws 或者 websocket
+    伪装域名(host)：wandering-mountain-7bf8.skynbip-84c.workers.dev
+    路径(path)：/?ed=2560
+    传输安全(TLS)：开启
+    跳过证书验证(allowlnsecure)：false
+
+
+
+3：聚合通用、Clash-meta、Sing-box订阅链接如下：
+
+注意：
+1、默认每个订阅链接包含TLS+非TLS共13个端口节点
+2、当前workers域名作为订阅链接，需通过代理进行订阅更新
+3、如使用的客户端不支持分片功能，则TLS节点不可用
+聚合通用分享链接 (可直接导入客户端)：
+聚合通用订阅链接：
+https://wandering-mountain-7bf8.skynbip-84c.workers.dev/dd8089f4-5b84-4479-9cc1-9106a27cc68d/ty		
+Clash-meta订阅链接：
+https://wandering-mountain-7bf8.skynbip-84c.workers.dev/dd8089f4-5b84-4479-9cc1-9106a27cc68d/cl		
+Sing-box订阅链接：
+https://wandering-mountain-7bf8.skynbip-84c.workers.dev/dd8089f4-5b84-4479-9cc1-9106a27cc68d/sb		
+
