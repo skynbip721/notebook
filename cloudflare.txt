@@ -1,4 +1,4 @@
-网址：https://wandering-mountain-7bf8.skynbip-84c.workers.dev/dd8089f4-5b84-4479-9cc1-9106a27cc68d
+网址：https://soft-band-5eb1.skynbip-84c.workers.dev/d4d72790-6e7b-452e-8e5f-d015453721ee
 Cloudflare-workers/pages-vless代理脚本 V25.5.27
 
 甬哥博客地址：https://ygkkk.blogspot.com
