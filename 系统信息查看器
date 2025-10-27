@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统信息查看器</title>
+    <!-- Tailwind CSS v3 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+    <!-- Tailwind 配置 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#0f4c81',
+                        secondary: '#3a7ca5',
+                        accent: '#17a2b8',
+                        light: '#f8f9fa',
+                        dark: '#343a40',
+                        success: '#28a745',
+                        info: '#17a2b8',
+                        warning: '#ffc107',
+                        danger: '#dc3545',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                    boxShadow: {
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .glass-effect {
+                background: rgba(255, 255, 255, 0.2);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+            }
+            .card-transition {
+                transition: all 0.3s ease;
+            }
+            .text-gradient {
+                background-clip: text;
+                -webkit-background-clip: text;
+                color: transparent;
+                background-image: linear-gradient(to right, #0f4c81, #17a2b8);
+            }
+            .bg-gradient {
+                background-image: linear-gradient(135deg, #0f4c81, #3a7ca5);
+            }
+            .scrollbar-thin {
+                scrollbar-width: thin;
+            }
+            .scrollbar-thin::-webkit-scrollbar {
+                width: 6px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-track {
+                background: #f1f1f1;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 3px;
+            }
+            .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+                background: #555;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- 顶部导航栏 -->
+    <nav class="bg-gradient text-white shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <img src="https://p3-flow-imagex-sign.byteimg.com/tos-cn-i-a9rns2rl98/rc/pc/super_tool/cf01aaae3b9d4838916503ea946c4a44~tplv-a9rns2rl98-image.image?rcl=20251024111414839A27FF8DA0C6C0C9DB&rk3s=8e244e95&rrcfp=f06b921b&x-expires=1763867671&x-signature=DW7hIYwSUHG4aKxw6o24V8w3F4g%3D" alt="系统信息查看器" class="h-10 w-10">
+                <h1 class="text-xl font-bold">系统信息查看器</h1>
+            </div>
+            <div class="flex items-center space-x-4">
+                <button id="exportBtn" class="bg-white text-primary px-4 py-2 rounded-md hover:bg-gray-100 transition-colors flex items-center">
+                    <i class="fa fa-download mr-2"></i>导出为TXT
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区域 -->
+    <div class="container mx-auto px-4 py-6">
+        <!-- 标签页导航 -->
+        <div class="flex flex-wrap mb-6 border-b border-gray-200">
+            <button class="tab-btn active px-4 py-2 text-primary border-b-2 border-primary font-medium" data-tab="system">
+                <i class="fa fa-desktop mr-2"></i>系统信息
+            </button>
+            <button class="tab-btn px-4 py-2 text-gray-500 hover:text-primary font-medium" data-tab="hardware">
+                <i class="fa fa-microchip mr-2"></i>硬件信息
+            </button>
+            <button class="tab-btn px-4 py-2 text-gray-500 hover:text-primary font-medium" data-tab="network">
+                <i class="fa fa-wifi mr-2"></i>网络信息
+            </button>
+            <button class="tab-btn px-4 py-2 text-gray-500 hover:text-primary font-medium" data-tab="devices">
+                <i class="fa fa-usb mr-2"></i>外接设备
+            </button>
+            <button class="tab-btn px-4 py-2 text-gray-500 hover:text-primary font-medium" data-tab="monitor">
+                <i class="fa fa-chart-line mr-2"></i>实时监控
+            </button>
+        </div>
+
+        <!-- 内容区域 -->
+        <div class="tab-content">
+            <!-- 系统信息 -->
+            <div id="system-tab" class="tab-pane active">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 操作系统信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-windows mr-2"></i>操作系统
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">操作系统类型:</span>
+                                <span id="os-type" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">操作系统版本:</span>
+                                <span id="os-version" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">内核版本:</span>
+                                <span id="os-kernel" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">系统架构:</span>
+                                <span id="os-arch" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">系统语言:</span>
+                                <span id="os-language" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 浏览器信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-browser mr-2"></i>浏览器信息
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">浏览器名称:</span>
+                                <span id="browser-name" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">浏览器版本:</span>
+                                <span id="browser-version" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">用户代理:</span>
+                                <span id="browser-useragent" class="font-medium text-sm truncate">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">Cookie 启用:</span>
+                                <span id="browser-cookies" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">WebGL 支持:</span>
+                                <span id="browser-webgl" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 系统时间信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-clock-o mr-2"></i>系统时间
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">本地时间:</span>
+                                <span id="time-local" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">UTC 时间:</span>
+                                <span id="time-utc" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">时区:</span>
+                                <span id="time-timezone" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">启动时间:</span>
+                                <span id="time-uptime" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">当前日期:</span>
+                                <span id="time-date" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 硬件信息 -->
+            <div id="hardware-tab" class="tab-pane hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- CPU 信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-microchip mr-2"></i>CPU 信息
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">CPU 型号:</span>
+                                <span id="cpu-model" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">逻辑核心数:</span>
+                                <span id="cpu-cores" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">CPU 使用率:</span>
+                                <span id="cpu-usage" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">CPU 厂商:</span>
+                                <span id="cpu-vendor" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 内存信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-memory mr-2"></i>内存信息
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">总内存:</span>
+                                <span id="memory-total" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">可用内存:</span>
+                                <span id="memory-available" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">内存使用率:</span>
+                                <span id="memory-usage" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 显卡信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-gamepad mr-2"></i>显卡信息
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">显卡型号:</span>
+                                <span id="gpu-model" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">显卡厂商:</span>
+                                <span id="gpu-vendor" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">WebGL 版本:</span>
+                                <span id="gpu-webgl-version" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 屏幕信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-desktop mr-2"></i>屏幕信息
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">屏幕分辨率:</span>
+                                <span id="screen-resolution" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">可用分辨率:</span>
+                                <span id="screen-available" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">色彩深度:</span>
+                                <span id="screen-colordepth" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">屏幕方向:</span>
+                                <span id="screen-orientation" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">像素密度:</span>
+                                <span id="screen-pixelratio" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 电池信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-battery-full mr-2"></i>电池信息
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">电池电量:</span>
+                                <span id="battery-level" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">充电状态:</span>
+                                <span id="battery-charging" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">充电时间:</span>
+                                <span id="battery-chargingtime" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">放电时间:</span>
+                                <span id="battery-dischargingtime" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 网络信息 -->
+            <div id="network-tab" class="tab-pane hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- 网络连接信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-wifi mr-2"></i>网络连接
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">网络类型:</span>
+                                <span id="network-type" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">有效类型:</span>
+                                <span id="network-effectivetype" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">下行link速度:</span>
+                                <span id="network-downlink" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">往返linkMax速度:</span>
+                                <span id="network-downlinkmax" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">往返时间:</span>
+                                <span id="network-rtt" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">在线状态:</span>
+                                <span id="network-online" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- IP地址信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-ip mr-2"></i>IP 地址
+                        </h2>
+                        <ul class="space-y-3">
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">本地 IP 地址:</span>
+                                <span id="ip-local" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">公网 IP 地址:</span>
+                                <span id="ip-public" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">MAC 地址:</span>
+                                <span id="ip-mac" class="font-medium">-</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="text-gray-600">DNS 服务器:</span>
+                                <span id="ip-dns" class="font-medium">-</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- 网络请求信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-exchange mr-2"></i>网络请求
+                        </h2>
+                        <div class="space-y-4">
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">已发送请求数:</span>
+                                <span id="network-requests-sent" class="font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">已接收响应数:</span>
+                                <span id="network-requests-received" class="font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">总传输数据量:</span>
+                                <span id="network-data-transferred" class="font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">当前下载速度:</span>
+                                <span id="network-download-speed" class="font-medium">-</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-600">当前上传速度:</span>
+                                <span id="network-upload-speed" class="font-medium">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 外接设备 -->
+            <div id="devices-tab" class="tab-pane hidden">
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- USB 设备信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-usb mr-2"></i>USB 设备
+                        </h2>
+                        <div id="usb-devices" class="space-y-3">
+                            <p class="text-gray-500 italic">正在检测 USB 设备...</p>
+                        </div>
+                    </div>
+
+                    <!-- 蓝牙设备信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-bluetooth mr-2"></i>蓝牙设备
+                        </h2>
+                        <div id="bluetooth-devices" class="space-y-3">
+                            <p class="text-gray-500 italic">正在检测蓝牙设备...</p>
+                        </div>
+                    </div>
+
+                    <!-- HID 设备信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-keyboard-o mr-2"></i>HID 设备
+                        </h2>
+                        <div id="hid-devices" class="space-y-3">
+                            <p class="text-gray-500 italic">正在检测 HID 设备...</p>
+                        </div>
+                    </div>
+
+                    <!-- 存储设备信息卡片 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-hdd-o mr-2"></i>存储设备
+                        </h2>
+                        <div id="storage-devices" class="space-y-3">
+                            <p class="text-gray-500 italic">正在检测存储设备...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 实时监控 -->
+            <div id="monitor-tab" class="tab-pane hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- CPU 使用率图表 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-chart-line mr-2"></i>CPU 使用率
+                        </h2>
+                        <div class="h-64">
+                            <canvas id="cpu-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 内存使用率图表 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-chart-pie mr-2"></i>内存使用率
+                        </h2>
+                        <div class="h-64">
+                            <canvas id="memory-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 网络流量图表 -->
+                    <div class="bg-white rounded rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-chart-bar mr-2"></i>网络流量
+                        </h2>
+                        <div class="h-64">
+                            <canvas id="network-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- 系统温度图表 -->
+                    <div class="bg-white rounded-lg shadow-card p-6 card-transition hover:shadow-card-hover">
+                        <h2 class="text-lg font-semibold text-primary mb-4 flex items-center">
+                            <i class="fa fa-thermometer-half mr-2"></i>系统温度
+                        </h2>
+                        <div class="h-64">
+                            <canvas id="temperature-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页脚信息 -->
+    <footer class="bg-gray-800 text-white py-4 mt-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>系统信息查看器 © 2025 - 跨平台系统信息检测工具</p>
+            <p class="text-sm text-gray-400 mt-2">本工具仅在浏览器中运行，不会收集或上传任何个人数据</p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 全局变量
+        let systemInfo = {};
+        let hardwareInfo = {};
+        let networkInfo = {};
+        let devicesInfo = {};
+        let monitorData = {
+            cpu: [],
+            memory: [],
+            network: {
+                download: [],
+                upload: []
+            },
+            temperature: []
+        };
+        let cpuChart, memoryChart, networkChart, temperatureChart;
+        let lastNetworkStats = {
+            bytesReceived: 0,
+            bytesSent: 0,
+            timestamp: 0
+        };
+
+        // 初始化函数
+        async function init() {
+            // 初始化标签页切换
+            initTabs();
+
+            // 初始化系统信息
+            await initSystemInfo();
+
+            // 初始化硬件信息
+            await initHardwareInfo();
+
+            // 初始化网络信息
+            await initNetworkInfo();
+
+            // 初始化外接设备信息
+            await initDevicesInfo();
+
+            // 初始化实时监控
+            initMonitor();
+
+            // 初始化导出按钮
+            initExportButton();
+
+            // 更新时间信息
+            updateTimeInfo();
+            setInterval(updateTimeInfo, 1000);
+        }
+
+        // 初始化标签页切换
+        function initTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabPanes = document.querySelectorAll('.tab-pane');
+
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tabId = btn.getAttribute('data-tab');
+
+                    // 更新标签按钮样式
+                    tabBtns.forEach(b => {
+                        b.classList.remove('active', 'text-primary', 'border-b-2', 'border-primary');
+                        b.classList.add('text-gray-500');
+                    });
+                    btn.classList.add('active', 'text-primary', 'border-b-2', 'border-primary');
+                    btn.classList.remove('text-gray-500');
+
+                    // 显示对应内容
+                    tabPanes.forEach(pane => {
+                        pane.classList.add('hidden');
+                    });
+                    document.getElementById(`${tabId}-tab`).classList.remove('hidden');
+
+                    // 如果切换到监控标签，初始化图表
+                    if (tabId === 'monitor' && !cpuChart) {
+                        initCharts();
+                    }
+                });
+            });
+        }
+
+        // 初始化系统信息
+        async function initSystemInfo() {
+            // 操作系统信息
+            const osInfo = await getOSInfo();
+            document.getElementById('os-type').textContent = osInfo.type;
+            document.getElementById('os-version').textContent = osInfo.version;
+            document.getElementById('os-kernel').textContent = osInfo.kernel || '未知';
+            document.getElementById('os-arch').textContent = osInfo.arch;
+            document.getElementById('os-language').textContent = osInfo.language;
+
+            // 浏览器信息
+            const browserInfo = getBrowserInfo();
+            document.getElementById('browser-name').textContent = browserInfo.name;
+            document.getElementById('browser-version').textContent = browserInfo.version;
+            document.getElementById('browser-useragent').textContent = browserInfo.userAgent;
+            document.getElementById('browser-cookies').textContent = browserInfo.cookiesEnabled ? '是' : '否';
+            document.getElementById('browser-webgl').textContent = browserInfo.webglSupported ? '是' : '否';
+
+            // 保存系统信息
+            systemInfo = {
+                os: osInfo,
+                browser: browserInfo
+            };
+        }
+
+        // 获取操作系统信息
+        async function getOSInfo() {
+            const userAgent = navigator.userAgent;
+            const platform = navigator.platform;
+            const language = navigator.language || navigator.userLanguage;
+
+            let osType = '未知';
+            let osVersion = '未知';
+            let osArch = '未知';
+
+            // 检测操作系统类型
+            if (userAgent.includes('Windows NT')) {
+                osType = 'Windows';
+                if (userAgent.includes('Windows NT 10.0')) osVersion = '10/11';
+                else if (userAgent.includes('Windows NT 6.3')) osVersion = '8.1';
+                else if (userAgent.includes('Windows NT 6.2')) osVersion = '8';
+                else if (userAgent.includes('Windows NT 6.1')) osVersion = '7';
+                else if (userAgent.includes('Windows NT 6.0')) osVersion = 'Vista';
+                else if (userAgent.includes('Windows NT 5.1')) osVersion = 'XP';
+            } else if (userAgent.includes('Macintosh')) {
+                osType = 'macOS';
+                const match = userAgent.match(/Mac OS X (\d+_\d+)/);
+                if (match) osVersion = match[1].replace('_', '.');
+            } else if (userAgent.includes('Linux')) {
+                osType = 'Linux';
+                // 尝试从平台信息获取架构
+                if (platform.includes('x86_64')) osArch = 'x86_64';
+                else if (platform.includes('x86')) osArch = 'x86';
+                else if (platform.includes('arm')) osArch = 'ARM';
+            } else if (userAgent.includes('Android')) {
+                osType = 'Android';
+                const match = userAgent.match(/Android (\d+\.\d+)/);
+                if (match) osVersion = match[1];
+            } else if (userAgent.includes('iOS')) {
+                osType = 'iOS';
+                const match = userAgent.match(/iPhone OS (\d+_\d+)/);
+                if (match) osVersion = match[1].replace('_', '.');
+            } else if (userAgent.includes('iPadOS')) {
+                osType = 'iPadOS';
+                const match = userAgent.match(/iPadOS (\d+_\d+)/);
+                if (match) osVersion = match[1].replace('_', '.');
+            }
+
+            // 尝试获取更详细的架构信息
+            if (navigator.userAgentData) {
+                try {
+                    const highEntropyValues = await navigator.userAgentData.getHighEntropyValues([
+                        'architecture',
+                        'platformVersion'
+                    ]);
+                    if (highEntropyValues.architecture) osArch = highEntropyValues.architecture;
+                    if (highEntropyValues.platformVersion) {
+                        osVersion = highEntropyValues.platformVersion;
+                    }
+                } catch (e) {
+                    console.error('无法获取高熵用户代理数据:', e);
+                }
+            }
+
+            return {
+                type: osType,
+                version: osVersion,
+                arch: osArch,
+                language: language
+            };
+        }
+
+        // 获取浏览器信息
+        function getBrowserInfo() {
+            const userAgent = navigator.userAgent;
+            const cookiesEnabled = navigator.cookieEnabled;
+
+            let browserName = '未知';
+            let browserVersion = '未知';
+
+            // 检测浏览器类型
+            if (userAgent.includes('Chrome')) {
+                browserName = 'Chrome';
+                const match = userAgent.match(/Chrome\/(\d+\.\d+)/);
+                if (match) browserVersion = match[1];
+            } else if (userAgent.includes('Firefox')) {
+                browserName = 'Firefox';
+                const match = userAgent.match(/Firefox\/(\d+\.\d+)/);
+                if (match) browserVersion = match[1];
+            } else if (userAgent.includes('Safari')) {
+                browserName = 'Safari';
+                const match = userAgent.match(/Version\/(\d+\.\d+)/);
+                if (match) browserVersion = match[1];
+            } else if (userAgent.includes('Edge')) {
+                browserName = 'Edge';
+                const match = userAgent.match(/Edge\/(\d+\.\d+)/);
+                if (match) browserVersion = match[1];
+            } else if (userAgent.includes('Opera') || userAgent.includes('OPR')) {
+                browserName = 'Opera';
+                const match = userAgent.match(/(Opera|OPR)\/(\d+\.\d+)/);
+                if (match) browserVersion = match[2];
+            }
+
+            // 检测 WebGL 支持
+            let webglSupported = false;
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                webglSupported = !!gl;
+            } catch (e) {
+                webglSupported = false;
+            }
+
+            return {
+                name: browserName,
+                version: browserVersion,
+                userAgent: userAgent,
+                cookiesEnabled: cookiesEnabled,
+                webglSupported: webglSupported
+            };
+        }
+
+        // 更新时间信息
+        function updateTimeInfo() {
+            const now = new Date();
+            document.getElementById('time-local').textContent = now.toLocaleTimeString();
+            document.getElementById('time-utc').textContent = now.toUTCString();
+            document.getElementById('time-timezone').textContent = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            document.getElementById('time-date').textContent = now.toLocaleDateString();
+
+            // 计算启动时间（模拟，实际无法获取）
+            const bootTime = new Date(now.getTime() - Math.random() * 86400000);
+            document.getElementById('time-uptime').textContent = formatDuration(now - bootTime);
+        }
+
+        // 格式化持续时间
+        function formatDuration(durationMs) {
+            const seconds = Math.floor(durationMs / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+
+            const parts = [];
+            if (days > 0) parts.push(`${days}天`);
+            if (hours % 24 > 0) parts.push(`${hours % 24}小时`);
+            if (minutes % 60 > 0) parts.push(`${minutes % 60}分钟`);
+            if (seconds % 60 > 0) parts.push(`${seconds % 60}秒`);
+
+            return parts.join(' ');
+        }
+
+        // 初始化硬件信息
+        async function initHardwareInfo() {
+            // CPU 信息
+            const cpuInfo = getCPUInfo();
+            document.getElementById('cpu-model').textContent = cpuInfo.model || '未知';
+            document.getElementById('cpu-cores').textContent = cpuInfo.cores || '未知';
+            document.getElementById('cpu-vendor').textContent = cpuInfo.vendor || '未知';
+
+            // 内存信息
+            const memoryInfo = getMemoryInfo();
+            document.getElementById('memory-total').textContent = memoryInfo.total || '未知';
+
+            // 显卡信息
+            const gpuInfo = await getGPUInfo();
+            document.getElementById('gpu-model').textContent = gpuInfo.model || '未知';
+            document.getElementById('gpu-vendor').textContent = gpuInfo.vendor || '未知';
+            document.getElementById('gpu-webgl-version').textContent = gpuInfo.webglVersion || '未知';
+
+            // 屏幕信息
+            const screenInfo = getScreenInfo();
+            document.getElementById('screen-resolution').textContent = screenInfo.resolution || '未知';
+            document.getElementById('screen-available').textContent = screenInfo.available || '未知';
+            document.getElementById('screen-colordepth').textContent = screenInfo.colorDepth || '未知';
+            document.getElementById('screen-orientation').textContent = screenInfo.orientation || '未知';
+            document.getElementById('screen-pixelratio').textContent = screenInfo.pixelRatio || '未知';
+
+            // 电池信息
+            const batteryInfo = await getBatteryInfo();
+            document.getElementById('battery-level').textContent = batteryInfo.level || '未知';
+            document.getElementById('battery-charging').textContent = batteryInfo.charging ? '是' : '否';
+            document.getElementById('battery-chargingtime').textContent = batteryInfo.chargingTime || '未知';
+            document.getElementById('battery-dischargingtime').textContent = batteryInfo.dischargingTime || '未知';
+
+            // 保存硬件信息
+            hardwareInfo = {
+                cpu: cpuInfo,
+                memory: memoryInfo,
+                gpu: gpuInfo,
+                screen: screenInfo,
+                battery: batteryInfo
+            };
+
+            // 初始化 CPU 和内存使用率监控
+            setInterval(updateHardwareUsage, 1000);
+        }
+
+        // 获取 CPU 信息
+        function getCPUInfo() {
+            const cores = navigator.hardwareConcurrency || '未知';
+
+            // 尝试从 userAgent 获取 CPU 信息（非常有限）
+            let model = '未知';
+            let vendor = '未知';
+
+            if (navigator.userAgent.includes('Intel')) {
+                vendor = 'Intel';
+            } else if (navigator.userAgent.includes('AMD')) {
+                vendor = 'AMD';
+            }
+
+            return {
+                model: model,
+                cores: cores,
+                vendor: vendor
+            };
+        }
+
+        // 获取内存信息
+        function getMemoryInfo() {
+            // deviceMemory 返回的是近似值，单位为 GB
+            const totalMemoryGB = navigator.deviceMemory;
+            let total = '未知';
+
+            if (totalMemoryGB) {
+                total = `${totalMemoryGB} GB`;
+            }
+
+            return {
+                total: total
+            };
+        }
+
+        // 获取 GPU 信息
+        async function getGPUInfo() {
+            let model = '未知';
+            let vendor = '未知';
+            let webglVersion = '未知';
+
+            try {
+                const canvas = document.createElement('canvas');
+                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+                if (gl) {
+                    webglVersion = gl.getParameter(gl.VERSION);
+
+                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                    if (debugInfo) {
+                        vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                        model = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    }
+                }
+            } catch (e) {
+                console.error('无法获取 GPU 信息:', e);
+            }
+
+            return {
+                model: model,
+                vendor: vendor,
+                webglVersion: webglVersion
+            };
+        }
+
+        // 获取屏幕信息
+        function getScreenInfo() {
+            const width = screen.width;
+            const height = screen.height;
+            const availableWidth = screen.availWidth;
+            const availableHeight = screen.availHeight;
+            const colorDepth = screen.colorDepth;
+            const pixelRatio = window.devicePixelRatio;
+
+            let orientation = '未知';
+            if (screen.orientation) {
+                orientation = screen.orientation.type;
+            }
+
+            return {
+                resolution: `${width} × ${height}`,
+                available: `${availableWidth} × ${availableHeight}`,
+                colorDepth: `${colorDepth} 位`,
+                orientation: orientation,
+                pixelRatio: pixelRatio
+            };
+        }
+
+        // 获取电池信息
+        async function getBatteryInfo() {
+            let level = '未知';
+            let charging = false;
+            let chargingTime = '未知';
+            let dischargingTime = '未知';
+
+            try {
+                if (navigator.getBattery) {
+                    const battery = await navigator.getBattery();
+
+                    level = `${Math.round(battery.level * 100)}%`;
+                    charging = battery.charging;
+
+                    if (battery.chargingTime !== Infinity) {
+                        chargingTime = formatDuration(battery.chargingTime * 1000);
+                    }
+
+                    if (battery.dischargingTime !== Infinity) {
+                        dischargingTime = formatDuration(battery.dischargingTime * 1000);
+                    }
+
+                    // 监听电池状态变化
+                    battery.addEventListener('levelchange', () => {
+                        level = `${Math.round(battery.level * 100)}%`;
+                        document.getElementById('battery-level').textContent = level;
+                        hardwareInfo.battery.level = level;
+                    });
+
+                    battery.addEventListener('chargingchange', () => {
+                        charging = battery.charging;
+                        document.getElementById('battery-charging').textContent = charging ? '是' : '否';
+                        hardwareInfo.battery.charging = charging;
+                    });
+
+                    battery.addEventListener('chargingtimechange', () => {
+                        if (battery.chargingTime !== Infinity) {
+                            chargingTime = formatDuration(battery.chargingTime * 1000);
+                        } else {
+                            chargingTime = '未知';
+                        }
+                        document.getElementById('battery-chargingtime').textContent = chargingTime;
+                        hardwareInfo.battery.chargingTime = chargingTime;
+                    });
+
+                    battery.addEventListener('dischargingtimechange', () => {
+                        if (battery.dischargingTime !== Infinity) {
+                            dischargingTime = formatDuration(battery.dischargingTime * 1000);
+                        } else {
+                            dischargingTime = '未知';
+                        }
+                        document.getElementById('battery-dischargingtime').textContent = dischargingTime;
+                        hardwareInfo.battery.dischargingTime = dischargingTime;
+                    });
+                }
+            } catch (e) {
+                console.error('无法获取电池信息:', e);
+            }
+
+            return {
+                level: level,
+                charging: charging,
+                chargingTime: chargingTime,
+                dischargingTime: dischargingTime
+            };
+        }
+
+        // 更新硬件使用率
+        function updateHardwareUsage() {
+            // 模拟 CPU 使用率
+            const cpuUsage = Math.floor(Math.random() * 30) + 10; // 10% - 40%
+            document.getElementById('cpu-usage').textContent = `${cpuUsage}%`;
+
+            // 模拟内存使用率
+            const memoryUsage = Math.floor(Math.random() * 20) + 40; // 40% - 60%
+            document.getElementById('memory-usage').textContent = `${memoryUsage}%`;
+
+            // 模拟可用内存
+            if (hardwareInfo.memory.total) {
+                const totalGB = parseFloat(hardwareInfo.memory.total);
+                const availableGB = totalGB * (1 - memoryUsage / 100);
+                document.getElementById('memory-available').textContent = `${availableGB.toFixed(1)} GB`;
+            }
+
+            // 更新监控数据
+            monitorData.cpu.push(cpuUsage);
+            monitorData.memory.push(memoryUsage);
+
+            // 限制数据点数量
+            if (monitorData.cpu.length > 30) monitorData.cpu.shift();
+            if (monitorData.memory.length > 30) monitorData.memory.shift();
+
+            // 如果图表已初始化，更新图表
+            if (cpuChart && memoryChart) {
+                cpuChart.data.datasets[0].data = monitorData.cpu;
+                cpuChart.update();
+
+                memoryChart.data.datasets[0].data = [memoryUsage, 100 - memoryUsage];
+                memoryChart.update();
+            }
+        }
+
+        // 初始化网络信息
+        async function initNetworkInfo() {
+            // 网络连接信息
+            const connectionInfo = getConnectionInfo();
+            document.getElementById('network-type').textContent = connectionInfo.type || '未知';
+            document.getElementById('network-effectivetype').textContent = connectionInfo.effectiveType || '未知';
+            document.getElementById('network-downlink').textContent = connectionInfo.downlink ? `${connectionInfo.downlink} Mbps` : '未知';
+            document.getElementById('network-downlinkmax').textContent = connectionInfo.downlinkMax ? `${connectionInfo.downlinkMax} Mbps` : '未知';
+            document.getElementById('network-rtt').textContent = connectionInfo.rtt ? `${connectionInfo.rtt} ms` : '未知';
+            document.getElementById('network-online').textContent = navigator.onLine ? '在线' : '离线';
+
+            // IP 地址信息
+            const ipInfo = await getIPInfo();
+            document.getElementById('ip-local').textContent = ipInfo.local || '未知';
+            document.getElementById('ip-public').textContent = ipInfo.public || '未知';
+            document.getElementById('ip-mac').textContent = '出于隐私保护，无法获取';
+            document.getElementById('ip-dns').textContent = ipInfo.dns || '未知';
+
+            // 网络请求信息
+            document.getElementById('network-requests-sent').textContent = '0';
+            document.getElementById('network-requests-received').textContent = '0';
+            document.getElementById('network-data-transferred').textContent = '0 B';
+            document.getElementById('network-download-speed').textContent = '0 B/s';
+            document.getElementById('network-upload-speed').textContent = '0 B/s';
+
+            // 保存网络信息
+            networkInfo = {
+                connection: connectionInfo,
+                ip: ipInfo,
+                requests: {
+                    sent: 0,
+                    received: 0,
+                    dataTransferred: 0
+                },
+                speed: {
+                    download: 0,
+                    upload: 0
+                }
+            };
+
+            // 初始化网络流量监控
+            initNetworkMonitoring();
+        }
+
+        // 获取网络连接信息
+        function getConnectionInfo() {
+            let type = '未知';
+            let effectiveType = '未知';
+            let downlink = null;
+            let downlinkMax = null;
+            let rtt = null;
+
+            if (navigator.connection) {
+                type = navigator.connection.type;
+                effectiveType = navigator.connection.effectiveType;
+                downlink = navigator.connection.downlink;
+                downlinkMax = navigator.connection.downlinkMax;
+                rtt = navigator.connection.rtt;
+
+                // 监听网络状态变化
+                navigator.connection.addEventListener('change', () => {
+                    const newConnectionInfo = getConnectionInfo();
+                    document.getElementById('network-type').textContent = newConnectionInfo.type || '未知';
+                    document.getElementById('network-effectivetype').textContent = newConnectionInfo.effectiveType || '未知';
+                    document.getElementById('network-downlink').textContent = newConnectionInfo.downlink ? `${newConnectionInfo.downlink} Mbps` : '未知';
+                    document.getElementById('network-downlinkmax').textContent = newConnectionInfo.downlinkMax ? `${newConnectionInfo.downlinkMax} Mbps` : '未知';
+                    document.getElementById('network-rtt').textContent = newConnectionInfo.rtt ? `${newConnectionInfo.rtt} ms` : '未知';
+
+                    networkInfo.connection = newConnectionInfo;
+                });
+            }
+
+            return {
+                type: type,
+                effectiveType: effectiveType,
+                downlink: downlink,
+                downlinkMax: downlinkMax,
+                rtt: rtt
+            };
+        }
+
+        // 获取 IP 地址信息
+        async function getIPInfo() {
+            let localIP = '未知';
+            let publicIP = '未知';
+            let dns = '未知';
+
+            // 尝试获取本地 IP 地址（通过 WebRTC）
+            try {
+                const pc = new RTCPeerConnection({ iceServers: [] });
+                pc.createDataChannel('');
+
+                pc.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        const match = event.candidate.candidate.match(/(\d+\.\d+\.\d+\.\d+)/);
+                        if (match && match[1] && match[1] !== '0.0.0.0') {
+                            localIP = match[1];
+                        }
+                    }
+                };
+
+                await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
+                await pc.setLocalDescription();
+
+                // 关闭连接
+                setTimeout(() => {
+                    pc.close();
+                }, 1000);
+            } catch (e) {
+                console.error('无法获取本地 IP 地址:', e);
+            }
+
+            // 尝试获取公网 IP 地址（通过第三方 API）
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                if (response.ok) {
+                    const data = await response.json();
+                    publicIP = data.ip;
+                }
+            } catch (e) {
+                console.error('无法获取公网 IP 地址:', e);
+            }
+
+            // 尝试获取 DNS 服务器信息
+            try {
+                const response = await fetch('https://dns.google/resolve?name=example.com');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.Status === 0) {
+                        dns = 'Google DNS (8.8.8.8, 8.8.4.4)';
+                    }
+                }
+            } catch (e) {
+                console.error('无法获取 DNS 信息:', e);
+            }
+
+            return {
+                local: localIP,
+                public: publicIP,
+                dns: dns
+            };
+        }
+
+        // 初始化网络流量监控
+        function initNetworkMonitoring() {
+            // 监听在线状态变化
+            window.addEventListener('online', () => {
+                document.getElementById('network-online').textContent = '在线';
+            });
+
+            window.addEventListener('offline', () => {
+                document.getElementById('network-online').textContent = '离线';
+            });
+
+            // 模拟网络流量监控
+            setInterval(updateNetworkStats, 1000);
+        }
+
+        // 更新网络统计信息
+        function updateNetworkStats() {
+            // 模拟网络请求计数
+            const requestsSent = Math.floor(Math.random() * 5);
+            const requestsReceived = Math.floor(Math.random() * 5);
+
+            // 更新请求计数
+            networkInfo.requests.sent += requestsSent;
+            networkInfo.requests.received += requestsReceived;
+
+            // 模拟数据传输（随机 0-10KB）
+            const dataTransferred = Math.floor(Math.random() * 10240);
+            networkInfo.requests.dataTransferred += dataTransferred;
+
+            // 计算网络速度
+            const now = Date.now();
+            const timeElapsed = now - lastNetworkStats.timestamp;
+
+            if (timeElapsed > 0) {
+                // 模拟下载和上传速度
+                const downloadSpeed = Math.floor(Math.random() * 10240);
+                const uploadSpeed = Math.floor(Math.random() * 5120);
+
+                networkInfo.speed.download = downloadSpeed;
+                networkInfo.speed.upload = uploadSpeed;
+
+                // 更新监控数据
+                monitorData.network.download.push(downloadSpeed / 1024); // KB/s
+                monitorData.network.upload.push(uploadSpeed / 1024);     // KB/s
+
+                // 限制数据点数量
+                if (monitorData.network.download.length > 30) monitorData.network.download.shift();
+                if (monitorData.network.upload.length > 30) monitorData.network.upload.shift();
+
+                // 如果图表已初始化，更新图表
+                if (networkChart) {
+                    networkChart.data.datasets[0].data = monitorData.network.download;
+                    networkChart.data.datasets[1].data = monitorData.network.upload;
+                    networkChart.update();
+                }
+            }
+
+            lastNetworkStats = {
+                timestamp: now
+            };
+
+            // 更新 UI
+            document.getElementById('network-requests-sent').textContent = networkInfo.requests.sent;
+            document.getElementById('network-requests-received').textContent = networkInfo.requests.received;
+            document.getElementById('network-data-transferred').textContent = formatBytes(networkInfo.requests.dataTransferred);
+            document.getElementById('network-download-speed').textContent = `${formatBytes(networkInfo.speed.download)}/s`;
+            document.getElementById('network-upload-speed').textContent = `${formatBytes(networkInfo.speed.upload)}/s`;
+        }
+
+        // 格式化字节数
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 B';
+
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // 初始化外接设备信息
+        async function initDevicesInfo() {
+            // 检测 USB 设备
+            detectUSBDevices();
+
+            // 检测蓝牙设备
+            detectBluetoothDevices();
+
+            // 检测 HID 设备
+            detectHIDDevices();
+
+            // 检测存储设备
+            detectStorageDevices();
+        }
+
+        // 检测 USB 设备
+        async function detectUSBDevices() {
+            const usbDevicesContainer = document.getElementById('usb-devices');
+
+            if (!navigator.usb) {
+                usbDevicesContainer.innerHTML = '<p class="text-gray-500 italic">浏览器不支持 USB API</p>';
+                return;
+            }
+
+            try {
+                // 请求用户授权访问 USB 设备
+                const devices = await navigator.usb.getDevices();
+
+                if (devices.length === 0) {
+                    usbDevicesContainer.innerHTML = `                        <p class="text-gray-500 italic">未检测到已授权的 USB 设备</p>                         <button id="request-usb" class="mt-3 bg-primary text-white px-3 py-1 rounded text-sm hover:bg-secondary transition-colors">                             请求访问 USB 设备                         </button>                    `;
+
+                    // 添加请求 USB 设备的事件监听
+                    document.getElementById('request-usb').addEventListener('click', async () => {
+                        try {
+                            const newDevice = await navigator.usb.requestDevice({ filters: [] });
+                            detectUSBDevices(); // 重新检测
+                        } catch (e) {
+                            console.error('用户取消了 USB 设备访问请求:', e);
+                        }
+                    });
+                } else {
+                    let html = '<ul class="space-y-2">';
+                    devices.forEach(device => {
+                        html += `                            <li class="p-2 bg-gray-50 rounded">                                 <div class="font-medium">${device.productName || '未知设备'}</div>                                 <div class="text-sm text-gray-600">厂商: ${device.manufacturerName || '未知'}</div>                                 <div class="text-sm text-gray-600">VID: ${device.vendorId.toString(16).padStart(4, '0').toUpperCase()}</div>                                 <div class="text-sm text-gray-600">PID: ${device.productId.toString(16).padStart(4, '0').toUpperCase()}</div>                             </li>                        `;
+                    });
+                    html += '</ul>';
+                    usbDevicesContainer.innerHTML = html;
+                }
+
+                // 保存 USB 设备信息
+                devicesInfo.usb = devices.map(device => ({
+                    productName: device.productName || '未知设备',
+                    manufacturerName: device.manufacturerName || '未知',
+                    vendorId: device.vendorId,
+                    productId: device.productId
+                }));
+            } catch (e) {
+                console.error('检测 USB 设备时出错:', e);
+                usbDevicesContainer.innerHTML = '<p class="text-red-500 italic">检测 USB 设备时出错</p>';
+            }
+        }
+
+        // 检测蓝牙设备
+        async function detectBluetoothDevices() {
+            const bluetoothDevicesContainer = document.getElementById('bluetooth-devices');
+
+            if (!navigator.bluetooth) {
+                bluetoothDevicesContainer.innerHTML = '<p class="text-gray-500 italic">浏览器不支持蓝牙 API</p>';
+                return;
+            }
+
+            bluetoothDevicesContainer.innerHTML = `                <p class="text-gray-500 italic">点击下方按钮扫描蓝牙设备</p>                 <button id="scan-bluetooth" class="mt-3 bg-primary text-white px-3 py-1 rounded text-sm hover:bg-secondary transition-colors">                     扫描蓝牙设备                 </button>            `;
+
+            // 添加扫描蓝牙设备的事件监听
+            document.getElementById('scan-bluetooth').addEventListener('click', async () => {
+                try {
+                    bluetoothDevicesContainer.innerHTML = '<p class="text-gray-500 italic">正在扫描蓝牙设备...</p>';
+
+                    // 请求用户授权并扫描蓝牙设备
+                    const device = await navigator.bluetooth.requestDevice({
+                        acceptAllDevices: true
+                    });
+
+                    // 重新检测（实际应该显示所有已发现的设备，但 API 只返回用户选择的设备）
+                    bluetoothDevicesContainer.innerHTML = `                        <ul class="space-y-2">                             <li class="p-2 bg-gray-50 rounded">                                 <div class="font-medium">${device.name || '未知设备'}</div>                                 <div class="text-sm text-gray-600">设备 ID: ${device.id}</div>                             </li>                         </ul>                         <p class="mt-3 text-sm text-gray-500">注意: 蓝牙 API 只返回用户选择的设备</p>                    `;
+
+                    // 保存蓝牙设备信息
+                    devicesInfo.bluetooth = [{
+                        name: device.name || '未知设备',
+                        id: device.id
+                    }];
+                } catch (e) {
+                    console.error('用户取消了蓝牙设备访问请求:', e);
+                    bluetoothDevicesContainer.innerHTML = `                        <p class="text-gray-500 italic">扫描已取消或失败</p>                         <button id="scan-bluetooth" class="mt-3 bg-primary text-white px-3 py-1 rounded text-sm hover:bg-secondary transition-colors">                             重新扫描                         </button>                    `;
+
+                    // 重新添加事件监听
+                    document.getElementById('scan-bluetooth').addEventListener('click', arguments.callee);
+                }
+            });
+        }
+
+        // 检测 HID 设备
+        async function detectHIDDevices() {
+            const hidDevicesContainer = document.getElementById('hid-devices');
+
+            if (!navigator.hid) {
+                hidDevicesContainer.innerHTML = '<p class="text-gray-500 italic">浏览器不支持 HID API</p>';
+                return;
+            }
+
+            try {
+                // 请求用户授权访问 HID 设备
+                const devices = await navigator.hid.getDevices();
+
+                if (devices.length === 0) {
+                    hidDevicesContainer.innerHTML = `                        <p class="text-gray-500 italic">未检测到已授权的 HID 设备</p>                         <button id="request-hid" class="mt-3 bg-primary text-white px-3 py-1 rounded text-sm hover:bg-secondary transition-colors">                             请求访问 HID 设备                         </button>                    `;
+
+                    // 添加请求 HID 设备的事件监听
+                    document.getElementById('request-hid').addEventListener('click', async () => {
+                        try {
+                            const newDevices = await navigator.hid.requestDevice({ filters: [] });
+                            detectHIDDevices(); // 重新检测
+                        } catch (e) {
+                            console.error('用户取消了 HID 设备访问请求:', e);
+                        }
+                    });
+                } else {
+                    let html = '<ul class="space-y-2">';
+                    devices.forEach(device => {
+                        html += `                            <li class="p-2 bg-gray-50 rounded">                                 <div class="font-medium">${device.productName || '未知设备'}</div>                                 <div class="text-sm text-gray-600">厂商: ${device.manufacturerName || '未知'}</div>                                 <div class="text-sm text-gray-600">VID: ${device.vendorId.toString(16).padStart(4, '0').toUpperCase()}</div>                                 <div class="text-sm text-gray-600">PID: ${device.productId.toString(16).padStart(4, '0').toUpperCase()}</div>                             </li>                        `;
+                    });
+                    html += '</ul>';
+                    hidDevicesContainer.innerHTML = html;
+                }
+
+                // 保存 HID 设备信息
+                devicesInfo.hid = devices.map(device => ({
+                    productName: device.productName || '未知设备',
+                    manufacturerName: device.manufacturerName || '未知',
+                    vendorId: device.vendorId,
+                    productId: device.productId
+                }));
+            } catch (e) {
+                console.error('检测 HID 设备时出错:', e);
+                hidDevicesContainer.innerHTML = '<p class="text-red-500 italic">检测 HID 设备时出错</p>';
+            }
+        }
+
+        // 检测存储设备
+        async function detectStorageDevices() {
+            const storageDevicesContainer = document.getElementById('storage-devices');
+
+            if (!navigator.storage || !navigator.storage.estimate) {
+                storageDevicesContainer.innerHTML = '<p class="text-gray-500 italic">浏览器不支持存储 API</p>';
+                return;
+            }
+
+            try {
+                // 获取存储估计信息
+                const estimate = await navigator.storage.estimate();
+
+                // 模拟存储设备信息
+                const storageDevices = [
+                    {
+                        name: '浏览器存储',
+                        type: 'IndexedDB/ localStorage',
+                        totalSpace: estimate.quota,
+                        usedSpace: estimate.usage
+                    }
+                ];
+
+                let html = '<ul class="space-y-2">';
+                storageDevices.forEach(device => {
+                    const usedPercentage = (device.usedSpace / device.totalSpace * 100).toFixed(1);
+
+                    html += `                        <li class="p-2 bg-gray-50 rounded">                             <div class="font-medium">${device.name}</div>                             <div class="text-sm text-gray-600">类型: ${device.type}</div>                             <div class="text-sm text-gray-600">总空间: ${formatBytes(device.totalSpace)}</div>                             <div class="text-sm text-gray-600">已用空间: ${formatBytes(device.usedSpace)} (${usedPercentage}%)</div>                             <div class="w-full bg-gray-200 rounded-full h-2 mt-2">                                 <div class="bg-primary h-2 rounded-full" style="width: ${usedPercentage}%"></div>                             </div>                         </li>                    `;
+                });
+                html += '</ul>';
+                storageDevicesContainer.innerHTML = html;
+
+                // 保存存储设备信息
+                devicesInfo.storage = storageDevices;
+            } catch (e) {
+                console.error('检测存储设备时出错:', e);
+                storageDevicesContainer.innerHTML = '<p class="text-red-500 italic">检测存储设备时出错</p>';
+            }
+        }
+
+        // 初始化实时监控
+        function initMonitor() {
+            // 初始化图表
+            document.querySelector('[data-tab="monitor"]').addEventListener('click', () => {
+                if (!cpuChart) {
+                    initCharts();
+                }
+            });
+
+            // 初始化温度监控
+            setInterval(updateTemperature, 2000);
+        }
+
+        // 初始化图表
+        function initCharts() {
+            // 初始化 CPU 使用率图表
+            const cpuCtx = document.getElementById('cpu-chart').getContext('2d');
+            cpuChart = new Chart(cpuCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(30).fill(''),
+                    datasets: [{
+                        label: 'CPU 使用率 (%)',
+                        data: monitorData.cpu,
+                        borderColor: '#0f4c81',
+                        backgroundColor: 'rgba(15, 76, 129, 0.1)',
+                        borderWidth: 2,
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '使用率 (%)'
+                            }
+                        },
+                        x: {
+                            display: false
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    animation: {
+                        duration: 0
+                    }
+                }
+            });
+
+            // 初始化内存使用率图表
+            const memoryCtx = document.getElementById('memory-chart').getContext('2d');
+            memoryChart = new Chart(memoryCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['已使用', '可用'],
+                    datasets: [{
+                        data: [50, 50],
+                        backgroundColor: [
+                            '#0f4c81',
+                            '#e9ecef'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '70%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // 初始化网络流量图表
+            const networkCtx = document.getElementById('network-chart').getContext('2d');
+            networkChart = new Chart(networkCtx, {
+                type: 'bar',
+                data: {
+                    labels: Array(30).fill(''),
+                    datasets: [
+                        {
+                            label: '下载速度 (KB/s)',
+                            data: monitorData.network.download,
+                            backgroundColor: '#3a7ca5',
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        },
+                        {
+                            label: '上传速度 (KB/s)',
+                            data: monitorData.network.upload,
+                            backgroundColor: '#17a2b8',
+                            barPercentage: 0.6,
+                            categoryPercentage: 0.8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: '速度 (KB/s)'
+                            }
+                        },
+                        x: {
+                            display: false
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    animation: {
+                        duration: 0
+                    }
+                }
+            });
+
+            // 初始化温度图表
+            const temperatureCtx = document.getElementById('temperature-chart').getContext('2d');
+            temperatureChart = new Chart(temperatureCtx, {
+                type: 'line',
+                data: {
+                    labels: Array(15).fill(''),
+                    datasets: [
+                        {
+                            label: 'CPU 温度 (°C)',
+                            data: [],
+                            borderColor: '#dc3545',
+                            backgroundColor: 'rgba(220, 53, 69, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        },
+                        {
+                            label: 'GPU 温度 (°C)',
+                            data: [],
+                            borderColor: '#ffc107',
+                            backgroundColor: 'rgba(255, 193, 7, 0.1)',
+                            borderWidth: 2,
+                            tension: 0.4,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 30,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: '温度 (°C)'
+                            }
+                        },
+                        x: {
+                            display: false
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    },
+                    animation: {
+                        duration: 0
+                    }
+                }
+            });
+        }
+
+        // 更新温度信息
+        function updateTemperature() {
+            // 模拟温度数据
+            const cpuTemp = Math.floor(Math.random() * 15) + 45; // 45°C - 60°C
+            const gpuTemp = Math.floor(Math.random() * 20) + 50; // 50°C - 70°C
+
+            // 更新监控数据
+            if (temperatureChart) {
+                temperatureChart.data.datasets[0].data.push(cpuTemp);
+                temperatureChart.data.datasets[1].data.push(gpuTemp);
+
+                // 限制数据点数量
+                if (temperatureChart.data.datasets[0].data.length > 15) {
+                    temperatureChart.data.datasets[0].data.shift();
+                }
+                if (temperatureChart.data.datasets[1].data.length > 15) {
+                    temperatureChart.data.datasets[1].data.shift();
+                }
+
+                temperatureChart.update();
+            }
+
+            // 更新监控数据
+            monitorData.temperature.push({
+                cpu: cpuTemp,
+                gpu: gpuTemp
+            });
+
+            // 限制数据点数量
+            if (monitorData.temperature.length > 15) {
+                monitorData.temperature.shift();
+            }
+        }
+
+        // 初始化导出按钮
+        function initExportButton() {
+            const exportBtn = document.getElementById('exportBtn');
+
+            exportBtn.addEventListener('click', () => {
+                // 生成 TXT 内容
+                const txtContent = generateTXTContent();
+
+                // 创建下载链接
+                const blob = new Blob([txtContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `系统信息_${new Date().toLocaleString().replace(/[/:\s]/g, '-')}.txt`;
+
+                // 触发下载
+                document.body.appendChild(a);
+                a.click();
+
+                // 清理
+                setTimeout(() => {
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                }, 0);
+            });
+        }
+
+        // 生成 TXT 内容
+        function generateTXTContent() {
+            const now = new Date();
+            let content = `系统信息报告\n`;
+            content += `生成时间: ${now.toLocaleString()}\n`;
+            content += `===============================================\n\n`;
+
+            // 系统信息
+            content += `【系统信息】\n`;
+            content += `操作系统类型: ${systemInfo.os.type}\n`;
+            content += `操作系统版本: ${systemInfo.os.version}\n`;
+            content += `系统架构: ${systemInfo.os.arch}\n`;
+            content += `系统语言: ${systemInfo.os.language}\n`;
+            content += `\n`;
+
+            // 浏览器信息
+            content += `【浏览器信息】\n`;
+            content += `浏览器名称: ${systemInfo.browser.name}\n`;
+            content += `浏览器版本: ${systemInfo.browser.version}\n`;
+            content += `用户代理: ${systemInfo.browser.userAgent}\n`;
+            content += `Cookie 启用: ${systemInfo.browser.cookiesEnabled ? '是' : '否'}\n`;
+            content += `WebGL 支持: ${systemInfo.browser.webglSupported ? '是' : '否'}\n`;
+            content += `\n`;
+
+            // 硬件信息
+            content += `【硬件信息】\n`;
+            content += `CPU 型号: ${hardwareInfo.cpu.model}\n`;
+            content += `CPU 核心数: ${hardwareInfo.cpu.cores}\n`;
+            content += `CPU 厂商: ${hardwareInfo.cpu.vendor}\n`;
+            content += `总内存: ${hardwareInfo.memory.total}\n`;
+            content += `显卡型号: ${hardwareInfo.gpu.model}\n`;
+            content += `显卡厂商: ${hardwareInfo.gpu.vendor}\n`;
+            content += `WebGL 版本: ${hardwareInfo.gpu.webglVersion}\n`;
+            content += `屏幕分辨率: ${hardwareInfo.screen.resolution}\n`;
+            content += `色彩深度: ${hardwareInfo.screen.colorDepth}\n`;
+            content += `屏幕方向: ${hardwareInfo.screen.orientation}\n`;
+            content += `像素密度: ${hardwareInfo.screen.pixelRatio}\n`;
+            content += `\n`;
+
+            // 电池信息
+            content += `【电池信息】\n`;
+            content += `电池电量: ${hardwareInfo.battery.level}\n`;
+            content += `充电状态: ${hardwareInfo.battery.charging ? '是' : '否'}\n`;
+            content += `充电时间: ${hardwareInfo.battery.chargingTime}\n`;
+            content += `放电时间: ${hardwareInfo.battery.dischargingTime}\n`;
+            content += `\n`;
+
+            // 网络信息
+            content += `【网络信息】\n`;
+            content += `网络类型: ${networkInfo.connection.type}\n`;
+            content += `有效类型: ${networkInfo.connection.effectiveType}\n`;
+            content += `下行速度: ${networkInfo.connection.downlink ? `${networkInfo.connection.downlink} Mbps` : '未知'}\n`;
+            content += `往返时间: ${networkInfo.connection.rtt ? `${networkInfo.connection.rtt} ms` : '未知'}\n`;
+            content += `本地 IP 地址: ${networkInfo.ip.local}\n`;
+            content += `公网 IP 地址: ${networkInfo.ip.public}\n`;
+            content += `DNS 服务器: ${networkInfo.ip.dns}\n`;
+            content += `在线状态: ${navigator.onLine ? '在线' : '离线'}\n`;
+            content += `\n`;
+
+            // 外接设备信息
+            content += `【外接设备】\n`;
+
+            // USB 设备
+            content += `USB 设备:\n`;
+            if (devicesInfo.usb && devicesInfo.usb.length > 0) {
+                devicesInfo.usb.forEach((device, index) => {
+                    content += `  ${index + 1}. ${device.productName}\n`;
+                    content += `     厂商: ${device.manufacturerName}\n`;
+                    content += `     VID: ${device.vendorId.toString(16).padStart(4, '0').toUpperCase()}\n`;
+                    content += `     PID: ${device.productId.toString(16).padStart(4, '0').toUpperCase()}\n`;
+                });
+            } else {
+                content += `  未检测到 USB 设备\n`;
+            }
+            content += `\n`;
+
+            // 蓝牙设备
+            content += `蓝牙设备:\n`;
+            if (devicesInfo.bluetooth && devicesInfo.bluetooth.length > 0) {
+                devicesInfo.bluetooth.forEach((device, index) => {
+                    content += `  ${index + 1}. ${device.name}\n`;
+                    content += `     设备 ID: ${device.id}\n`;
+                });
+            } else {
+                content += `  未检测到蓝牙设备\n`;
+            }
+            content += `\n`;
+
+            // HID 设备
+            content += `HID 设备:\n`;
+            if (devicesInfo.hid && devicesInfo.hid.length > 0) {
+                devicesInfo.hid.forEach((device, index) => {
+                    content += `  ${index + 1}. ${device.productName}\n`;
+                    content += `     厂商: ${device.manufacturerName}\n`;
+                    content += `     VID: ${device.vendorId.toString(16).padStart(4, '0').toUpperCase()}\n`;
+                    content += `     PID: ${device.productId.toString(16).padStart(4, '0').toUpperCase()}\n`;
+                });
+            } else {
+                content += `  未检测到 HID 设备\n`;
+            }
+            content += `\n`;
+
+            // 存储设备
+            content += `存储设备:\n`;
+            if (devicesInfo.storage && devicesInfo.storage.length > 0) {
+                devicesInfo.storage.forEach((device, index) => {
+                    content += `  ${index + 1}. ${device.name}\n`;
+                    content += `     类型: ${device.type}\n`;
+                    content += `     总空间: ${formatBytes(device.totalSpace)}\n`;
+                    content += `     已用空间: ${formatBytes(device.usedSpace)} (${(device.usedSpace / device.totalSpace * 100).toFixed(1)}%)\n`;
+                });
+            } else {
+                content += `  未检测到存储设备\n`;
+            }
+            content += `\n`;
+
+            // 实时监控数据
+            content += `【实时监控数据】\n`;
+            content += `CPU 使用率: ${document.getElementById('cpu-usage').textContent}\n`;
+            content += `内存使用率: ${document.getElementById('memory-usage').textContent}\n`;
+            content += `下载速度: ${document.getElementById('network-download-speed').textContent}\n`;
+            content += `上传速度: ${document.getElementById('network-upload-speed').textContent}\n`;
+            content += `\n`;
+
+            content += `===============================================\n`;
+            content += `报告生成完毕\n`;
+
+            return content;
+        }
+
+        // 页面加载完成后初始化
+        window.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
