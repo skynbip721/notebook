@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统信息收集工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .section {
+            margin-bottom: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .section h2 {
+            color: #555;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        .info-item {
+            padding: 10px;
+            background-color: white;
+            border: 1px solid #eee;
+            border-radius: 4px;
+        }
+        .info-item strong {
+            color: #333;
+        }
+        .controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #saveStatus {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-style: italic;
+            color: #666;
+        }
+        .note {
+            background-color: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>系统信息收集工具</h1>
+        
+        <div class="note">
+            <strong>注意：</strong>由于浏览器安全限制，此工具只能收集有限的系统信息。要获取完整的系统信息，请使用专业的系统信息收集工具。
+        </div>
+        
+        <div class="controls">
+            <button onclick="collectSystemInfo()">收集系统信息</button>
+            <button onclick="saveToFile()">保存到文件</button>
+            <button onclick="saveToFolder()">选择文件夹保存</button>
+        </div>
+        
+        <div id="saveStatus"></div>
+        
+        <div id="systemInfo">
+            <div class="loading">请点击"收集系统信息"按钮开始收集系统信息</div>
+        </div>
+    </div>
+
+    <script>
+        // 系统信息对象
+        let systemInfo = {};
+        
+        // 收集系统信息
+        function collectSystemInfo() {
+            // 显示加载状态
+            document.getElementById('systemInfo').innerHTML = '<div class="loading">正在收集系统信息...</div>';
+            
+            // 尝试通过Web API收集系统信息
+            try {
+                systemInfo = generateSampleData();
+                displaySystemInfo();
+            } catch (error) {
+                document.getElementById('systemInfo').innerHTML = 
+                    '<div class="error">收集系统信息时出错: ' + error.message + '</div>';
+            }
+        }
+        
+        // 生成示例数据
+        function generateSampleData() {
+            return {
+                system: {
+                    name: navigator.platform.indexOf('Win') !== -1 ? "Windows" : 
+                          navigator.platform.indexOf('Mac') !== -1 ? "macOS" : "Linux",
+                    version: "1.0.0",
+                    architecture: navigator.userAgent.indexOf('WOW64') !== -1 || 
+                                 navigator.userAgent.indexOf('Win64') !== -1 ? "64-bit" : "32-bit",
+                    manufacturer: "Unknown"
+                },
+                motherboard: {
+                    brand: "Unknown",
+                    model: "Unknown",
+                    biosVersion: "Unknown",
+                    biosDate: "Unknown",
+                    onboardAudio: "Unknown",
+                    onboardGraphics: "Unknown"
+                },
+                cpu: {
+                    brand: "Unknown",
+                    model: navigator.hardwareConcurrency ? navigator.hardwareConcurrency + " cores" : "Unknown",
+                    cores: navigator.hardwareConcurrency || "Unknown",
+                    threads: navigator.hardwareConcurrency || "Unknown",
+                    baseFrequency: "Unknown",
+                    maxFrequency: "Unknown",
+                    temperature: "Unknown"
+                },
+                gpu: {
+                    brand: "Unknown",
+                    model: "Unknown",
+                    cores: "Unknown",
+                    memory: "Unknown",
+                    baseFrequency: "Unknown",
+                    temperature: "Unknown"
+                },
+                display: {
+                    brand: "Unknown",
+                    model: screen.width + "x" + screen.height,
+                    size: Math.sqrt(Math.pow(screen.width, 2) + Math.pow(screen.height, 2)) / 96 + "英寸",
+                    resolution: screen.width + "x" + screen.height
+                },
+                memory: {
+                    brand: "Unknown",
+                    model: "Unknown",
+                    total: navigator.deviceMemory ? navigator.deviceMemory + " GB" : "Unknown",
+                    used: "Unknown",
+                    free: "Unknown",
+                    usage: "Unknown"
+                },
+                disk: {
+                    brand: "Unknown",
+                    model: "Unknown",
+                    partitions: [
+                        {name: "Unknown", total: "Unknown", used: "Unknown", free: "Unknown", usage: "Unknown"}
+                    ]
+                },
+                battery: {
+                    brand: "Unknown",
+                    model: "Unknown",
+                    chargeCycles: "Unknown",
+                    dischargeCycles: "Unknown",
+                    temperature: "Unknown",
+                    health: "Unknown"
+                },
+                lan: {
+                    adapter: "Unknown",
+                    ipAddress: "Unknown",
+                    macAddress: "Unknown",
+                    speed: "Unknown"
+                },
+                public: {
+                    country: "Unknown",
+                    region: "Unknown",
+                    isp: "Unknown",
+                    dns: ["Unknown"],
+                    publicIp: "Unknown",
+                    speed: "Unknown"
+                },
+                serial: {
+                    devices: [
+                        {name: "Unknown", description: "Unknown", manufacturer: "Unknown"}
+                    ]
+                },
+                usb: {
+                    devices: [
+                        {name: "Unknown", manufacturer: "Unknown"}
+                    ]
+                },
+                network: {
+                    interfaces: [
+                        {name: "Unknown", manufacturer: "Unknown", model: "Unknown"}
+                    ]
+                }
+            };
+        }
+        
+        // 显示系统信息
+        function displaySystemInfo() {
+            let html = '';
+            
+            // 系统基本信息
+            html += `
+                <div class="section">
+                    <h2>系统基本信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>操作系统:</strong> ${systemInfo.system.name}</div>
+                        <div class="info-item"><strong>版本:</strong> ${systemInfo.system.version}</div>
+                        <div class="info-item"><strong>架构:</strong> ${systemInfo.system.architecture}</div>
+                        <div class="info-item"><strong>制造商:</strong> ${systemInfo.system.manufacturer}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 主板信息
+            html += `
+                <div class="section">
+                    <h2>主板信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>品牌:</strong> ${systemInfo.motherboard.brand}</div>
+                        <div class="info-item"><strong>型号:</strong> ${systemInfo.motherboard.model}</div>
+                        <div class="info-item"><strong>BIOS版本:</strong> ${systemInfo.motherboard.biosVersion}</div>
+                        <div class="info-item"><strong>BIOS日期:</strong> ${systemInfo.motherboard.biosDate}</div>
+                        <div class="info-item"><strong>板载声卡:</strong> ${systemInfo.motherboard.onboardAudio}</div>
+                        <div class="info-item"><strong>板载显卡:</strong> ${systemInfo.motherboard.onboardGraphics}</div>
+                    </div>
+                </div>
+            `;
+            
+            // CPU信息
+            html += `
+                <div class="section">
+                    <h2>CPU信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>品牌:</strong> ${systemInfo.cpu.brand}</div>
+                        <div class="info-item"><strong>型号:</strong> ${systemInfo.cpu.model}</div>
+                        <div class="info-item"><strong>核心数:</strong> ${systemInfo.cpu.cores}</div>
+                        <div class="info-item"><strong>线程数:</strong> ${systemInfo.cpu.threads}</div>
+                        <div class="info-item"><strong>基础频率:</strong> ${systemInfo.cpu.baseFrequency}</div>
+                        <div class="info-item"><strong>最大频率:</strong> ${systemInfo.cpu.maxFrequency}</div>
+                        <div class="info-item"><strong>温度:</strong> ${systemInfo.cpu.temperature}</div>
+                    </div>
+                </div>
+            `;
+            
+            // GPU信息
+            html += `
+                <div class="section">
+                    <h2>GPU信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>品牌:</strong> ${systemInfo.gpu.brand}</div>
+                        <div class="info-item"><strong>型号:</strong> ${systemInfo.gpu.model}</div>
+                        <div class="info-item"><strong>核心数:</strong> ${systemInfo.gpu.cores}</div>
+                        <div class="info-item"><strong>显存:</strong> ${systemInfo.gpu.memory}</div>
+                        <div class="info-item"><strong>基础频率:</strong> ${systemInfo.gpu.baseFrequency}</div>
+                        <div class="info-item"><strong>温度:</strong> ${systemInfo.gpu.temperature}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 显示器信息
+            html += `
+                <div class="section">
+                    <h2>显示器信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>品牌:</strong> ${systemInfo.display.brand}</div>
+                        <div class="info-item"><strong>型号:</strong> ${systemInfo.display.model}</div>
+                        <div class="info-item"><strong>尺寸:</strong> ${systemInfo.display.size}</div>
+                        <div class="info-item"><strong>分辨率:</strong> ${systemInfo.display.resolution}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 内存信息
+            html += `
+                <div class="section">
+                    <h2>内存信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>品牌:</strong> ${systemInfo.memory.brand}</div>
+                        <div class="info-item"><strong>型号:</strong> ${systemInfo.memory.model}</div>
+                        <div class="info-item"><strong>总容量:</strong> ${systemInfo.memory.total}</div>
+                        <div class="info-item"><strong>已使用:</strong> ${systemInfo.memory.used}</div>
+                        <div class="info-item"><strong>可用:</strong> ${systemInfo.memory.free}</div>
+                        <div class="info-item"><strong>使用率:</strong> ${systemInfo.memory.usage}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 磁盘信息
+            html += `
+                <div class="section">
+                    <h2>磁盘信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>品牌:</strong> ${systemInfo.disk.brand}</div>
+                        <div class="info-item"><strong>型号:</strong> ${systemInfo.disk.model}</div>
+                    </div>
+                    <h3>分区信息</h3>
+                    <div class="info-grid">
+            `;
+            
+            systemInfo.disk.partitions.forEach(partition => {
+                html += `
+                    <div class="info-item">
+                        <strong>分区:</strong> ${partition.name}<br>
+                        <strong>总容量:</strong> ${partition.total}<br>
+                        <strong>已使用:</strong> ${partition.used}<br>
+                        <strong>可用:</strong> ${partition.free}<br>
+                        <strong>使用率:</strong> ${partition.usage}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            // 电池信息
+            html += `
+                <div class="section">
+                    <h2>电池信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>品牌:</strong> ${systemInfo.battery.brand}</div>
+                        <div class="info-item"><strong>型号:</strong> ${systemInfo.battery.model}</div>
+                        <div class="info-item"><strong>充电次数:</strong> ${systemInfo.battery.chargeCycles}</div>
+                        <div class="info-item"><strong>放电次数:</strong> ${systemInfo.battery.dischargeCycles}</div>
+                        <div class="info-item"><strong>温度:</strong> ${systemInfo.battery.temperature}</div>
+                        <div class="info-item"><strong>健康状态:</strong> ${systemInfo.battery.health}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 局域网信息
+            html += `
+                <div class="section">
+                    <h2>局域网信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>网卡:</strong> ${systemInfo.lan.adapter}</div>
+                        <div class="info-item"><strong>IP地址:</strong> ${systemInfo.lan.ipAddress}</div>
+                        <div class="info-item"><strong>MAC地址:</strong> ${systemInfo.lan.macAddress}</div>
+                        <div class="info-item"><strong>连接速度:</strong> ${systemInfo.lan.speed}</div>
+                    </div>
+                </div>
+            `;
+            
+            // 公网信息
+            html += `
+                <div class="section">
+                    <h2>公网信息</h2>
+                    <div class="info-grid">
+                        <div class="info-item"><strong>国家/地区:</strong> ${systemInfo.public.country}</div>
+                        <div class="info-item"><strong>地区:</strong> ${systemInfo.public.region}</div>
+                        <div class="info-item"><strong>运营商:</strong> ${systemInfo.public.isp}</div>
+                        <div class="info-item"><strong>公网IP:</strong> ${systemInfo.public.publicIp}</div>
+                        <div class="info-item"><strong>网络速度:</strong> ${systemInfo.public.speed}</div>
+                        <div class="info-item">
+                            <strong>DNS服务器:</strong>
+                            <ul>
+                                ${systemInfo.public.dns.map(dns => `<li>${dns}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // 串口设备信息
+            html += `
+                <div class="section">
+                    <h2>串口设备信息</h2>
+                    <div class="info-grid">
+            `;
+            
+            systemInfo.serial.devices.forEach(device => {
+                html += `
+                    <div class="info-item">
+                        <strong>设备名:</strong> ${device.name}<br>
+                        <strong>描述:</strong> ${device.description}<br>
+                        <strong>制造商:</strong> ${device.manufacturer}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            // USB设备信息
+            html += `
+                <div class="section">
+                    <h2>USB设备信息</h2>
+                    <div class="info-grid">
+            `;
+            
+            systemInfo.usb.devices.forEach(device => {
+                html += `
+                    <div class="info-item">
+                        <strong>设备名:</strong> ${device.name}<br>
+                        <strong>制造商:</strong> ${device.manufacturer}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            // 网络接口设备信息
+            html += `
+                <div class="section">
+                    <h2>网络接口设备信息</h2>
+                    <div class="info-grid">
+            `;
+            
+            systemInfo.network.interfaces.forEach(interface => {
+                html += `
+                    <div class="info-item">
+                        <strong>接口名:</strong> ${interface.name}<br>
+                        <strong>制造商:</strong> ${interface.manufacturer}<br>
+                        <strong>型号:</strong> ${interface.model}
+                    </div>
+                `;
+            });
+            
+            html += `
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('systemInfo').innerHTML = html;
+        }
+        
+        // 保存到文件
+        function saveToFile() {
+            if (!systemInfo || Object.keys(systemInfo).length === 0) {
+                showStatus('请先收集系统信息', 'error');
+                return;
+            }
+            
+            // 将系统信息转换为JSON格式
+            const dataStr = JSON.stringify(systemInfo, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            // 创建下载链接
+            const exportFileDefaultName = 'system_info.json';
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+            
+            showStatus('系统信息已保存到文件', 'success');
+        }
+        
+        // 选择文件夹保存（在浏览器中无法直接选择文件夹，此处提供说明）
+        function saveToFolder() {
+            if (!systemInfo || Object.keys(systemInfo).length === 0) {
+                showStatus('请先收集系统信息', 'error');
+                return;
+            }
+            
+            alert('由于浏览器安全限制，无法直接选择文件夹保存。\n\n请使用"保存到文件"按钮下载JSON文件，然后手动将文件移动到您想要的文件夹中。');
+        }
+        
+        // 显示状态信息
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('saveStatus');
+            statusElement.textContent = message;
+            statusElement.className = type;
+            
+            // 3秒后自动清除状态信息
+            setTimeout(() => {
+                statusElement.textContent = '';
+                statusElement.className = '';
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
