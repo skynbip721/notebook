@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统信息收集工具</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            line-height: 1.8;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin: 25px 0;
+            padding: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background-color: #fafafa;
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #3498db;
+            margin-top: 0;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        .info-item {
+            margin: 10px 0;
+            padding: 5px 0;
+            border-bottom: 1px dashed #eee;
+        }
+        .label {
+            font-weight: bold;
+            color: #2c3e50;
+            display: inline-block;
+            width: 220px;
+        }
+        .value {
+            color: #34495e;
+        }
+        .button-container {
+            margin: 30px 0;
+            text-align: center;
+        }
+        button {
+            padding: 12px 24px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        #saveStatus {
+            margin-left: 15px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .limitation {
+            color: #e74c3c;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>系统信息收集报告</h1>
+        <div class="button-container">
+            <button onclick="saveInformation()">保存收集的信息</button>
+            <span id="saveStatus"></span>
+        </div>
+
+        <!-- 1. 系统基本信息 -->
+        <div class="section">
+            <h2>1. 系统基本信息</h2>
+            <div class="info-item">
+                <span class="label">操作系统:</span> 
+                <span class="value" id="os"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">操作系统版本:</span> 
+                <span class="value" id="osVersion"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">系统架构:</span> 
+                <span class="value" id="osArch"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">浏览器:</span> 
+                <span class="value" id="browser"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">浏览器版本:</span> 
+                <span class="value" id="browserVersion"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">用户代理:</span> 
+                <span class="value" id="userAgent"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">语言:</span> 
+                <span class="value" id="language"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">用户名:</span> 
+                <span class="value limitation">由于安全限制无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">密码:</span> 
+                <span class="value limitation">出于安全考虑无法获取</span>
+            </div>
+        </div>
+
+        <!-- 2. 主板详细信息 -->
+        <div class="section">
+            <h2>2. 主板详细信息</h2>
+            <div class="info-item">
+                <span class="label">品牌:</span> 
+                <span class="value limitation">由于浏览器安全限制无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">型号:</span> 
+                <span class="value limitation">由于浏览器安全限制无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">BIOS版本:</span> 
+                <span class="value limitation">由于浏览器安全限制无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">声卡信息:</span> 
+                <span class="value limitation">由于浏览器安全限制无法获取</span>
+            </div>
+        </div>
+
+        <!-- 3. CPU详细信息 -->
+        <div class="section">
+            <h2>3. CPU详细信息</h2>
+            <div class="info-item">
+                <span class="label">品牌:</span> 
+                <span class="value limitation">无法直接获取，需通过设备特征推测</span>
+            </div>
+            <div class="info-item">
+                <span class="label">型号:</span> 
+                <span class="value limitation">无法直接获取，需通过设备特征推测</span>
+            </div>
+            <div class="info-item">
+                <span class="label">逻辑核心数:</span> 
+                <span class="value" id="cpuCores"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">线程数:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">基础频率:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">当前频率:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">使用率:</span> 
+                <span class="value" id="cpuUsage"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">温度:</span> 
+                <span class="value limitation">由于安全限制无法获取</span>
+            </div>
+        </div>
+
+        <!-- 4. GPU详细信息 -->
+        <div class="section">
+            <h2>4. GPU详细信息</h2>
+            <div class="info-item">
+                <span class="label">厂商:</span> 
+                <span class="value" id="gpuVendor"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">型号:</span> 
+                <span class="value" id="gpuModel"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">核心数:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">频率:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">温度:</span> 
+                <span class="value limitation">由于安全限制无法获取</span>
+            </div>
+        </div>
+
+        <!-- 5. 显示器信息 -->
+        <div class="section">
+            <h2>5. 显示器信息</h2>
+            <div class="info-item">
+                <span class="label">品牌:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">型号:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">尺寸:</span> 
+                <span class="value limitation">无法直接获取，可通过分辨率和DPI估算</span>
+            </div>
+            <div class="info-item">
+                <span class="label">分辨率:</span> 
+                <span class="value" id="resolution"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">可用分辨率:</span> 
+                <span class="value" id="availResolution"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">像素密度:</span> 
+                <span class="value" id="pixelDensity"></span>
+            </div>
+        </div>
+
+        <!-- 6. 内存详细信息 -->
+        <div class="section">
+            <h2>6. 内存详细信息</h2>
+            <div class="info-item">
+                <span class="label">品牌:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">型号:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">总物理内存:</span> 
+                <span class="value limitation">浏览器无法获取系统总内存，以下为JS可用内存</span>
+            </div>
+            <div class="info-item">
+                <span class="label">JS已使用内存:</span> 
+                <span class="value" id="usedMemory"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">JS总内存:</span> 
+                <span class="value" id="totalMemory"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">JS内存限制:</span> 
+                <span class="value" id="memoryLimit"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">温度:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+        </div>
+
+        <!-- 7. 磁盘详细信息 -->
+        <div class="section">
+            <h2>7. 磁盘详细信息</h2>
+            <div class="info-item">
+                <span class="label">品牌:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">型号:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">分区:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">总容量:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">可用空间:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">温度:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">健康状态:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+        </div>
+
+        <!-- 8. 电池详细信息 -->
+        <div class="section">
+            <h2>8. 电池详细信息</h2>
+            <div class="info-item">
+                <span class="label">品牌:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">型号:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">规格:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">充电次数:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">放电次数:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">电量:</span> 
+                <span class="value" id="batteryLevel"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">是否充电:</span> 
+                <span class="value" id="batteryCharging"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">充电完成时间:</span> 
+                <span class="value" id="batteryChargingTime"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">放电时间:</span> 
+                <span class="value" id="batteryDischargingTime"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">电池温度:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">电池健康:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+        </div>
+
+        <!-- 9. 局域网信息 -->
+        <div class="section">
+            <h2>9. 局域网详细信息</h2>
+            <div class="info-item">
+                <span class="label">网卡品牌:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">网卡型号:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">本地IP地址:</span> 
+                <span class="value" id="localIp"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">网络类型:</span> 
+                <span class="value" id="networkType"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">共享信息:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+        </div>
+
+        <!-- 10. 公网信息 -->
+        <div class="section">
+            <h2>10. 公网详细信息</h2>
+            <div class="info-item">
+                <span class="label">公网IP地址:</span> 
+                <span class="value" id="publicIp"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">国家/地区:</span> 
+                <span class="value" id="country"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">城市:</span> 
+                <span class="value" id="city"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">经纬度:</span> 
+                <span class="value" id="coordinates"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">运营商:</span> 
+                <span class="value" id="isp"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">DNS服务器:</span> 
+                <span class="value limitation">无法直接获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">ARP信息:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+            <div class="info-item">
+                <span class="label">网络速率:</span> 
+                <span class="value" id="networkSpeed"></span>
+            </div>
+        </div>
+
+        <!-- 11-14. 外部设备信息 -->
+        <div class="section">
+            <h2>11. 串口设备信息</h2>
+            <div class="info-item">
+                <span class="label">说明:</span> 
+                <span class="value limitation">由于浏览器安全限制，无法获取串口设备信息</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>12. USB设备信息</h2>
+            <div class="info-item">
+                <span class="label">说明:</span> 
+                <span class="value limitation">部分浏览器支持WebUSB API，但需要用户授权且兼容性有限</span>
+            </div>
+            <div id="usbDevices"></div>
+        </div>
+
+        <div class="section">
+            <h2>13. 网络接口设备信息</h2>
+            <div class="info-item">
+                <span class="label">带宽估计:</span> 
+                <span class="value" id="downlink"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">最大带宽:</span> 
+                <span class="value" id="downlinkMax"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">往返时间:</span> 
+                <span class="value" id="rtt"></span>
+            </div>
+            <div class="info-item">
+                <span class="label">品牌/型号:</span> 
+                <span class="value limitation">无法获取</span>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>14. 蓝牙连接信息</h2>
+            <div class="info-item">
+                <span class="label">说明:</span> 
+                <span class="value limitation">部分浏览器支持Web Bluetooth API，但需要用户授权且兼容性有限</span>
+            </div>
+            <div id="bluetoothDevices"></div>
+            <button onclick="requestBluetoothDevices()" style="margin-top:10px;">获取蓝牙设备(需授权)</button>
+        </div>
+    </div>
+
+    <script>
+        // 1. 收集系统基本信息
+        function collectSystemInfo() {
+            const userAgent = navigator.userAgent;
+            document.getElementById('userAgent').textContent = userAgent;
+            document.getElementById('language').textContent = navigator.language || navigator.userLanguage;
+            
+            // 检测操作系统及版本
+            let os = "未知";
+            let osVersion = "未知";
+            
+            if (userAgent.includes("Windows")) {
+                os = "Windows";
+                if (userAgent.includes("Windows NT 10.0")) osVersion = "10/11";
+                else if (userAgent.includes("Windows NT 6.3")) osVersion = "8.1";
+                else if (userAgent.includes("Windows NT 6.2")) osVersion = "8";
+                else if (userAgent.includes("Windows NT 6.1")) osVersion = "7";
+                else if (userAgent.includes("Windows NT 6.0")) osVersion = "Vista";
+                else if (userAgent.includes("Windows NT 5.1")) osVersion = "XP";
+            }
+            else if (userAgent.includes("Mac OS X")) {
+                os = "macOS";
+                const match = userAgent.match(/Mac OS X (\d+_\d+_\d+)/);
+                if (match) osVersion = match[1].replace(/_/g, '.');
+            }
+            else if (userAgent.includes("Linux")) {
+                os = "Linux";
+                osVersion = "未知发行版";
+            }
+            else if (userAgent.includes("Android")) {
+                os = "Android";
+                const match = userAgent.match(/Android (\d+\.\d+\.\d+)/);
+                if (match) osVersion = match[1];
+            }
+            else if (userAgent.includes("iPad")) {
+                os = "iPadOS";
+                const match = userAgent.match(/OS (\d+_\d+)/);
+                if (match) osVersion = match[1].replace(/_/g, '.');
+            }
+            else if (userAgent.includes("iPhone")) {
+                os = "iOS";
+                const match = userAgent.match(/OS (\d+_\d+)/);
+                if (match) osVersion = match[1].replace(/_/g, '.');
+            }
+            
+            document.getElementById('os').textContent = os;
+            document.getElementById('osVersion').textContent = osVersion;
+            
+            // 检测系统架构
+            let arch = "未知";
+            if (userAgent.includes("x86_64") || userAgent.includes("Win64") || userAgent.includes("wow64")) {
+                arch = "64位";
+            } else if (userAgent.includes("x86") || userAgent.includes("i386")) {
+                arch = "32位";
+            } else if (userAgent.includes("ARM")) {
+                arch = "ARM架构";
+            }
+            document.getElementById('osArch').textContent = arch;
+            
+            // 检测浏览器及版本
+            let browser = "未知";
+            let browserVersion = "未知";
+            
+            if (userAgent.includes("Chrome") && !userAgent.includes("Edge")) {
+                browser = "Chrome";
+                const match = userAgent.match(/Chrome\/(\d+\.\d+)/);
+                if (match) browserVersion = match[1];
+            }
+            else if (userAgent.includes("Firefox")) {
+                browser = "Firefox";
+                const match = userAgent.match(/Firefox\/(\d+\.\d+)/);
+                if (match) browserVersion = match[1];
+            }
+            else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+                browser = "Safari";
+                const match = userAgent.match(/Version\/(\d+\.\d+)/);
+                if (match) browserVersion = match[1];
+            }
+            else if (userAgent.includes("Edge")) {
+                browser = "Edge";
+                const match = userAgent.match(/Edge\/(\d+\.\d+)/);
+                if (match) browserVersion = match[1];
+            }
+            else if (userAgent.includes("Opera")) {
+                browser = "Opera";
+                const match = userAgent.match(/Opera\/(\d+\.\d+)/);
+                if (match) browserVersion = match[1];
+            }
+            
+            document.getElementById('browser').textContent = browser;
+            document.getElementById('browserVersion').textContent = browserVersion;
+        }
+
+        // 3. 收集CPU信息
+        function collectCpuInfo() {
+            document.getElementById('cpuCores').textContent = navigator.hardwareConcurrency || "未知";
+            
+            // 简单的CPU使用率估算
+            let lastTime = performance.now();
+            let lastValue = 0;
+            
+            // 使用Web Worker创建负载来估算CPU使用率
+            const workerCode = `
+                setInterval(() => {
+                    // 简单的计算任务
+                    let sum = 0;
+                    for (let i = 0; i < 1000000; i++) {
+                        sum += Math.sqrt(i);
+                    }
+                }, 500);
+            `;
+            
+            const blob = new Blob([workerCode], { type: 'application/javascript' });
+            const worker = new Worker(URL.createObjectURL(blob));
+            
+            function checkCpuUsage() {
+                if (performance && performance.memory) {
+                    const currentTime = performance.now();
+                    const currentValue = performance.memory.usedJSHeapSize;
+                    const elapsed = currentTime - lastTime;
+                    
+                    // 粗略估算CPU使用率
+                    const usage = Math.min(100, Math.round((currentValue - lastValue) / elapsed / 100));
+                    document.getElementById('cpuUsage').textContent = `${usage}% (估算值)`;
+                    
+                    lastTime = currentTime;
+                    lastValue = currentValue;
+                }
+                requestAnimationFrame(checkCpuUsage);
+            }
+            
+            checkCpuUsage();
+        }
+
+        // 4. 收集GPU信息
+        function collectGpuInfo() {
+            const canvas = document.createElement('canvas');
+            const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+            
+            if (gl) {
+                const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                if (debugInfo) {
+                    const vendor = gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL);
+                    const renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL);
+                    document.getElementById('gpuVendor').textContent = vendor;
+                    document.getElementById('gpuModel').textContent = renderer;
+                    return;
+                }
+            }
+            
+            document.getElementById('gpuVendor').textContent = "无法获取";
+            document.getElementById('gpuModel').textContent = "无法获取";
+        }
+
+        // 5. 收集显示器信息
+        function collectDisplayInfo() {
+            document.getElementById('resolution').textContent = `${screen.width}x${screen.height}`;
+            document.getElementById('availResolution').textContent = `${screen.availWidth}x${screen.availHeight}`;
+            document.getElementById('pixelDensity').textContent = `${window.devicePixelRatio} (DPR)`;
+        }
+
+        // 6. 收集内存信息
+        function collectMemoryInfo() {
+            if (performance && performance.memory) {
+                const used = (performance.memory.usedJSHeapSize / 1024 / 1024).toFixed(2);
+                const total = (performance.memory.totalJSHeapSize / 1024 / 1024).toFixed(2);
+                const limit = (performance.memory.jsHeapSizeLimit / 1024 / 1024).toFixed(2);
+                
+                document.getElementById('usedMemory').textContent = `${used} MB`;
+                document.getElementById('totalMemory').textContent = `${total} MB`;
+                document.getElementById('memoryLimit').textContent = `${limit} MB`;
+            } else {
+                document.getElementById('usedMemory').textContent = "无法获取";
+                document.getElementById('totalMemory').textContent = "无法获取";
+                document.getElementById('memoryLimit').textContent = "无法获取";
+            }
+        }
+
+        // 8. 收集电池信息
+        function collectBatteryInfo() {
+            if (navigator.getBattery) {
+                navigator.getBattery().then(battery => {
+                    const updateBatteryInfo = () => {
+                        document.getElementById('batteryLevel').textContent = `${Math.round(battery.level * 100)}%`;
+                        document.getElementById('batteryCharging').textContent = battery.charging ? "是" : "否";
+                        document.getElementById('batteryChargingTime').textContent = battery.chargingTime > 0 ? formatTime(battery.chargingTime) : "已充满";
+                        document.getElementById('batteryDischargingTime').textContent = battery.dischargingTime > 0 ? formatTime(battery.dischargingTime) : "未知";
+                    };
+                    
+                    updateBatteryInfo();
+                    battery.addEventListener('levelchange', updateBatteryInfo);
+                    battery.addEventListener('chargingchange', updateBatteryInfo);
+                    battery.addEventListener('chargingtimechange', updateBatteryInfo);
+                    battery.addEventListener('dischargingtimechange', updateBatteryInfo);
+                });
+            } else {
+                document.getElementById('batteryLevel').textContent = "不支持电池API";
+                document.getElementById('batteryCharging').textContent = "不支持电池API";
+                document.getElementById('batteryChargingTime').textContent = "不支持电池API";
+                document.getElementById('batteryDischargingTime').textContent = "不支持电池API";
+            }
+        }
+
+        // 格式化时间（秒转时分秒）
+        function formatTime(seconds) {
+            if (seconds === Infinity) return '未知';
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = Math.floor(seconds % 60);
+            return `${h > 0 ? h + '小时' : ''}${m > 0 ? m + '分钟' : ''}${s}秒`;
+        }
+
+        // 9. 收集局域网信息
+        function collectLanInfo() {
+            // 使用WebRTC获取本地IP
+            const pc = new RTCPeerConnection({ iceServers: [] });
+            pc.createDataChannel('');
+            
+            pc.createOffer().then(offer => pc.setLocalDescription(offer))
+              .catch(err => console.error('获取本地IP失败:', err));
+            
+            pc.onicecandidate = event => {
+                if (!event.candidate) return;
+                const ipRegex = /([0-9]{1,3}(\.[0-9]{1,3}){3}|[a-f0-9]{1,4}(:[a-f0-9]{1,4}){7})/;
+                const match = event.candidate.candidate.match(ipRegex);
+                if (match) {
+                    document.getElementById('localIp').textContent = match[1];
+                }
+                pc.close();
+            };
+            
+            // 检测网络类型
+            if (navigator.connection) {
+                const type = navigator.connection.type || 'unknown';
+                const effectiveType = navigator.connection.effectiveType || 'unknown';
+                document.getElementById('networkType').textContent = `${type} (${effectiveType})`;
+                document.getElementById('downlink').textContent = `${navigator.connection.downlink || '未知'} Mbps`;
+                document.getElementById('downlinkMax').textContent = `${navigator.connection.downlinkMax || '未知'} Mbps`;
+                document.getElementById('rtt').textContent = `${navigator.connection.rtt || '未知'} ms`;
+                
+                // 估算网络速率
+                measureNetworkSpeed();
+            } else {
+                document.getElementById('networkType').textContent = "不支持网络信息API";
+                document.getElementById('downlink').textContent = "不支持网络信息API";
+                document.getElementById('downlinkMax').textContent = "不支持网络信息API";
+                document.getElementById('rtt').textContent = "不支持网络信息API";
+                document.getElementById('networkSpeed').textContent = "不支持网络信息API";
+            }
+        }
+
+        // 测量网络速率
+        function measureNetworkSpeed() {
+            const testImageUrl = 'https://picsum.photos/1000/1000'; // 约30KB的测试图片
+            const startTime = performance.now();
+            
+            fetch(testImageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const endTime = performance.now();
+                    const duration = (endTime - startTime) / 1000; // 转换为秒
+                    const speedKbps = (blob.size * 8 / 1024 / duration).toFixed(2);
+                    const speedMbps = (speedKbps / 1024).toFixed(2);
+                    
+                    document.getElementById('networkSpeed').textContent = 
+                        `${speedKbps} Kbps (${speedMbps} Mbps) - 基于图片下载测试`;
+                })
+                .catch(err => {
+                    document.getElementById('networkSpeed').textContent = "速率测试失败";
+                });
+        }
+
+        // 10. 收集公网信息
+        function collectWanInfo() {
+            // 获取公网IP
+            fetch('https://api.ipify.org?format=json')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('publicIp').textContent = data.ip;
+                    
+                    // 获取地理位置信息
+                    fetch(`https://ipapi.co/${data.ip}/json/`)
+                        .then(response => response.json())
+                        .then(geoData => {
+                            document.getElementById('country').textContent = `${geoData.country_name || '未知'} (${geoData.country_code || ''})`;
+                            document.getElementById('city').textContent = geoData.city || '未知';
+                            document.getElementById('coordinates').textContent = `${geoData.latitude || '未知'}, ${geoData.longitude || '未知'}`;
+                            document.getElementById('isp').textContent = geoData.org || '未知';
+                        })
+                        .catch(err => console.error('获取地理位置失败:', err));
+                })
+                .catch(err => console.error('获取公网IP失败:', err));
+        }
+
+        // 12. 尝试获取USB设备信息（需要用户授权）
+        async function requestUsbDevices() {
+            if ('usb' in navigator) {
+                try {
+                    const devices = await navigator.usb.getDevices();
+                    const usbDevicesDiv = document.getElementById('usbDevices');
+                    
+                    if (devices.length === 0) {
+                        usbDevicesDiv.innerHTML = '<div class="info-item"><span class="label">已连接设备:</span> <span class="value">未检测到已授权的USB设备</span></div>';
+                        return;
+                    }
+                    
+                    let html = '';
+                    devices.forEach((device, index) => {
+                        html += `
+                            <div class="info-item">
+                                <span class="label">设备 ${index + 1}:</span> 
+                                <span class="value">厂商ID: ${device.vendorId}, 产品ID: ${device.productId}</span>
+                            </div>
+                        `;
+                    });
+                    
+                    usbDevicesDiv.innerHTML = html;
+                } catch (err) {
+                    document.getElementById('usbDevices').innerHTML = `<div class="info-item"><span class="label">错误:</span> <span class="value">${err.message}</span></div>`;
+                }
+            } else {
+                document.getElementById('usbDevices').innerHTML = '<div class="info-item"><span class="label">提示:</span> <span class="value">您的浏览器不支持WebUSB API</span></div>';
+            }
+        }
+
+        // 14. 尝试获取蓝牙设备信息（需要用户授权）
+        async function requestBluetoothDevices() {
+            if ('bluetooth' in navigator) {
+                try {
+                    const device = await navigator.bluetooth.requestDevice({
+                        acceptAllDevices: true
+                    });
+                    
+                    const bluetoothDiv = document.getElementById('bluetoothDevices');
+                    bluetoothDiv.innerHTML = `
+                        <div class="info-item">
+                            <span class="label">设备名称:</span> 
+                            <span class="value">${device.name || '未知'}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">设备ID:</span> 
+                            <span class="value">${device.id}</span>
+                        </div>
+                    `;
+                } catch (err) {
+                    document.getElementById('bluetoothDevices').innerHTML = `<div class="info-item"><span class="label">错误:</span> <span class="value">${err.message}</span></div>`;
+                }
+            } else {
+                document.getElementById('bluetoothDevices').innerHTML = '<div class="info-item"><span class="label">提示:</span> <span class="value">您的浏览器不支持Web Bluetooth API</span></div>';
+            }
+        }
+
+        // 保存收集的信息
+        function saveInformation() {
+            let textContent = "系统信息收集报告\n";
+            textContent += "生成时间: " + new Date().toLocaleString() + "\n";
+            textContent += "==============================\n\n";
+            
+            // 遍历所有信息区域
+            document.querySelectorAll('.section').forEach(section => {
+                const title = section.querySelector('h2').textContent;
+                textContent += title + "\n";
+                textContent += "-".repeat(title.length) + "\n";
+                
+                section.querySelectorAll('.info-item').forEach(item => {
+                    textContent += item.textContent + "\n";
+                });
+                textContent += "\n";
+            });
+            
+            // 创建文本文件并下载
+            const blob = new Blob([textContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `system-info-${new Date().toISOString().slice(0,10)}.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // 显示保存成功提示
+            const statusElem = document.getElementById('saveStatus');
+            statusElem.textContent = "信息已保存!";
+            setTimeout(() => statusElem.textContent = "", 3000);
+        }
+
+        // 页面加载时收集所有可获取的信息
+        window.onload = function() {
+            collectSystemInfo();
+            collectCpuInfo();
+            collectGpuInfo();
+            collectDisplayInfo();
+            collectMemoryInfo();
+            collectBatteryInfo();
+            collectLanInfo();
+            collectWanInfo();
+            
+            // 尝试获取USB设备信息（需要用户交互才能授权）
+            document.getElementById('usbDevices').innerHTML = `
+                <button onclick="requestUsbDevices()" style="margin-top:10px;">获取USB设备(需授权)</button>
+            `;
+        };
+    </script>
+</body>
+</html>
